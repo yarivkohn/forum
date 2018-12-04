@@ -46,11 +46,26 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav mr-auto">
-                    <li><a class="nav-link" href="/threads">{{ __('All threads') }}</a></li>
+                    <li>
+                        <div class="dropdown">
+                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Browse
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="nav-link" href="/threads">{{ __('All threads') }}</a>
+                                @if(auth()->check())
+                                    <a class="nav-link"
+                                       href="/threads?by={{ auth()->user()->name }}">{{ __('My Threads') }}</a>
+                                @endif
+                            </div>
+                        </div>
+                    </li>
                     <li><a class="nav-link" href="/threads/create">New Thread</a></li>
                     <li>
                         <div class="dropdown">
-                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Channels
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">

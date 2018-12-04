@@ -47,12 +47,12 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav mr-auto">
                     <li><a class="nav-link" href="/threads">{{ __('All threads') }}</a></li>
+                    <li><a class="nav-link" href="/threads/create">New Thread</a></li>
                     <li>
                         <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Channels
-                            </button>
+                            </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 @foreach (App\Channel::all() as $channel)
                                     <a class="dropdown-item"

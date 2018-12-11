@@ -21,7 +21,11 @@
 
     <style>
         .card {
-            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        .card:last-of-type:not(:first-of-type) {
+            margin-bottom: 30px;
         }
 
         body {

@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-8 offset-1">
                 <div class="card">
                     <div class="card-body">
                         <article>
@@ -13,34 +14,36 @@
                         </article>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                @foreach ($thread->replies AS $reply)
+                @foreach ($replies AS $reply)
                     @include('threads.reply')
                 @endforeach
-            </div>
-        </div>
-        <br>
-        <div class="row justify-content-center">
-            @if (auth()->check())
 
-                <div class="col-md-8">
+                {{ $replies->links() }}
+
+                @if (auth()->check())
+
                     <form method="POST" action="{{ $thread->path().'/replies' }}">
                         {{ csrf_field() }}
                         <div class="form-group">
-                                <textarea name="body" class="form-control"
-                                          placeholder="Have something to say?"></textarea>
+                            <textarea name="body" class="form-control" placeholder="Have something to say?"></textarea>
                         </div>
                         <button type="submit" class="btn btn-default">Post</button>
                     </form>
+                @else
+                    <p>Please sign in to participate in this thread</p>
+                @endif
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                       <p>
+                           This thread was published {{ $thread->created_at->diffForHumans() }} by
+                           <a href="#"> {{ $thread->creator->name }}</a>, and currently has {{ $thread->replies_count }} {{ str_plural('comment', $thread->replies_count) }}.
+                       </p>
+                    </div>
                 </div>
-
-            @else
-
-            @endif
+            </div>
         </div>
     </div>
 @endsection

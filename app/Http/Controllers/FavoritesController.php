@@ -27,6 +27,7 @@ class FavoritesController extends Controller
 //            'favorited_type' => get_class($reply),
 //        ]);
 //        $reply->favorites()->create(['user_id' => auth()->id()]); // Since this is a polymorphic relationship Eloquent will auto complete the favorited id and type
-        return $reply->favorite();
+        $reply->favorite();
+        return redirect()->back();
     }
 }

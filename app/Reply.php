@@ -26,4 +26,9 @@ class Reply extends Model
             $this->favorites()->create($attributes); // Since this is a polymorphic relationship aloquent will auto complete the favorited id and type
         }
     }
+
+    public function isFavorited()
+    {
+        return $this->favorites()->where('user_id', auth()->id())->exists();
+    }
 }

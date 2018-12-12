@@ -8,12 +8,19 @@ class Thread extends Model
 {
     protected $guarded = [];
 
+    protected $with = ['creator', 'channel'];
+
     protected static function boot()
     {
         parent::boot();
         static::addGlobalScope('replyCount', function($builder){
             $builder->withCount('replies');
         });
+
+// This is now being replaced with the global param $with
+//        static::addGlobalScope('creator', function($builder){
+//            $builder->with('creator');
+//        });
     }
 
     public function path()
@@ -23,9 +30,7 @@ class Thread extends Model
 
     public function replies()
     {
-        return $this->hasMany('App\Reply')
-            ->withCount('favorites')
-            ->with('owner');
+        return $this->hasMany('App\Reply');
     }
 
 //    public function getReplyCountAttribute()

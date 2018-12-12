@@ -23,7 +23,7 @@ Route::get('/threads/create', 'ThreadsController@create');
 Route::get('/threads/{channel}', 'ThreadsController@index');
 Route::get('/threads/{channel}/{thread}', 'ThreadsController@show');
 Route::post('/threads/', 'ThreadsController@store');
-
+Route::post('/replies/{reply}/favorites', 'FavoritesController@store');
 
 //Route::resource('threads/{channel}/','ThreadsController');
 

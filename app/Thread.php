@@ -17,6 +17,10 @@ class Thread extends Model
             $builder->withCount('replies');
         });
 
+        static::deleting(function($thread){
+            $thread->replies()->delete();
+        });
+
 // This is now being replaced with the global param $with
 //        static::addGlobalScope('creator', function($builder){
 //            $builder->with('creator');

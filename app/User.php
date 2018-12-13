@@ -27,4 +27,18 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * Make eloquent use name for Type hinting and
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
+
+    public function threads()
+    {
+        return $this->hasMany('App\Thread')->latest();
+    }
 }

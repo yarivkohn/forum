@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Symfony\Component\HttpFoundation\Response;
 use Tests\DataBaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -87,11 +88,47 @@ class CreateThreadsTest extends DataBaseTestCase
             ->assertSessionHasErrors('channel_id');
     }
 
+    /**
+     * @param array $overrides
+     * @return \Illuminate\Foundation\Testing\TestResponse
+     */
     public function publishThread($overrides = [])
     {
         $this->withExceptionHandling()->signIn();
         $thread = make('App\Thread', $overrides);
         return $this->post('/threads', $thread->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function unauthorized_users_may_not_delete_threads()
+    {
+        $this->withExceptionHandling();
+        $thread = create('App\Thread');
+        //User is not signed in
+        $this->json('DELETE', $thread->path())
+            ->assertStatus(Response::HTTP_UNAUTHORIZED);
+        // User is signed in, However this is not his post
+        $this->signIn();
+        $this->json('DELETE', $thread->path())
+            ->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    /**
+     * @test
+     */
+    public function authorized_users_can_delete_thread()
+    {
+        $this->signIn();
+        $thread = create('App\Thread', ['user_id' => auth()->id()]);
+        $reply = create('App\Reply', ['thread_id' => $thread->id]);
+
+        $response  = $this->json('DELETE', $thread->path());
+        $response->assertStatus(Response::HTTP_FOUND);
+
+        $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
+        $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
     }
 
 }

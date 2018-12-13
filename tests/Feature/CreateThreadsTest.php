@@ -102,27 +102,26 @@ class CreateThreadsTest extends DataBaseTestCase
     /**
      * @test
      */
-    public function guests_cannot_delete_thread()
+    public function unauthorized_users_may_not_delete_threads()
     {
         $this->withExceptionHandling();
         $thread = create('App\Thread');
-
-        $response  = $this->json('DELETE', $thread->path());
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
-    }
-
-    public function threads_may_only_be_deleted_by_those_who_have_permissions()
-    {
-        // TODO
+        //User is not signed in
+        $this->json('DELETE', $thread->path())
+            ->assertStatus(Response::HTTP_UNAUTHORIZED);
+        // User is signed in, However this is not his post
+        $this->signIn();
+        $this->json('DELETE', $thread->path())
+            ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
     /**
      * @test
      */
-    public function a_thread_can_be_deleted()
+    public function authorized_users_can_delete_thread()
     {
         $this->signIn();
-        $thread = create('App\Thread');
+        $thread = create('App\Thread', ['user_id' => auth()->id()]);
         $reply = create('App\Reply', ['thread_id' => $thread->id]);
 
         $response  = $this->json('DELETE', $thread->path());

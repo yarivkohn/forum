@@ -11,11 +11,13 @@
                         <span class="flex">
                             <a href="/profile/{{ $thread->creator->name }}">{{ $thread->creator->name }}</a> posted: {{ $thread->title }}
                         </span>
-                            <form method="POST" action=" {{ $thread->path() }}">
-                                {{ csrf_field() }}
-                                {{ method_field('DELETE') }}
-                                <button type="submit" class="btn btn-link">Delete Thread</button>
-                            </form>
+                            @can ('update', $thread)
+                                <form method="POST" action=" {{ $thread->path() }}">
+                                    {{ csrf_field() }}
+                                    {{ method_field('DELETE') }}
+                                    <button type="submit" class="btn btn-link">Delete Thread</button>
+                                </form>
+                            @endcan
                         </div>
                     </div>
                     <div class="card-body">

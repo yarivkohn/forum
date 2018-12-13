@@ -112,6 +112,10 @@ class ThreadsController extends Controller
      */
     public function destroy(Channel $channel, Thread $thread)
     {
+//         if($thread->user_id != auth()->id()) {
+//            return response(['status' => 'Permission denied'], Response::HTTP_UNAUTHORIZED);
+//        }
+        $this->authorize('update', $thread);
         try {
 //            $thread->replies()->delete(); // This was replaced by the static deleting function at Thread.php
             $thread->delete();

@@ -6,6 +6,7 @@ use App\Filters\ThreadFilter;
 use App\Channel;
 use App\Thread;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ThreadsController extends Controller
 {
@@ -25,10 +26,10 @@ class ThreadsController extends Controller
     {
         $threads = $this->getThreads($channel, $filter);
 
-        if(request()->wantsJson()) {
+        if (request()->wantsJson()) {
             return $threads;
         }
-        return view('threads.index')->with(['threads'=>$threads]);
+        return view('threads.index')->with(['threads' => $threads]);
     }
 
     /**
@@ -50,7 +51,7 @@ class ThreadsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'title' => 'required',
             'body' => 'required',
             'channel_id' => 'required|exists:channels,id',
@@ -68,7 +69,7 @@ class ThreadsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Thread  $thread
+     * @param  \App\Thread $thread
      * @return \Illuminate\Http\Response
      */
     public function show($channelId, Thread $thread)
@@ -76,13 +77,13 @@ class ThreadsController extends Controller
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(20),
-            ]);
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Thread  $thread
+     * @param  \App\Thread $thread
      * @return \Illuminate\Http\Response
      */
     public function edit(Thread $thread)
@@ -93,8 +94,8 @@ class ThreadsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Thread  $thread
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Thread $thread
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Thread $thread)
@@ -105,12 +106,23 @@ class ThreadsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
+     * @param Channel $channel
+     * @param  \App\Thread $thread
+     * @return array
      */
-    public function destroy(Thread $thread)
+    public function destroy(Channel $channel, Thread $thread)
     {
-        //
+        try {
+//            $thread->replies()->delete(); // This was replaced by the static deleting function at Thread.php
+            $thread->delete();
+        } catch (\Exception $e) {
+            return response([
+                'status' => 'failure',
+                'message' => $e->getMessage(),
+            ],
+                Response::HTTP_UNAUTHORIZED);
+        }
+        return redirect('/threads/');
     }
 
     /**

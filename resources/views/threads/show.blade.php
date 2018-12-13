@@ -8,7 +8,7 @@
                 <div class="card">
                     <div class="card-body">
                         <article>
-                            <h4><a href="#">{{ $thread->creator->name }}</a> posted: {{ $thread->title }} </h4>
+                            <h4><a href="/profile/{{ $thread->creator->name }}">{{ $thread->creator->name }}</a> posted: {{ $thread->title }} </h4>
                             <hr>
                             <div class="body">{{ $thread->body }}</div>
                         </article>

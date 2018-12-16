@@ -4,8 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class Thread extends Model
 {
+    use RecordActivity;
+
     protected $guarded = [];
 
     protected $with = ['creator', 'channel'];
@@ -25,6 +28,11 @@ class Thread extends Model
 //        static::addGlobalScope('creator', function($builder){
 //            $builder->with('creator');
 //        });
+    }
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
     }
 
     public function path()
@@ -61,4 +69,5 @@ class Thread extends Model
     {
         return $filters->apply($query);
     }
+
 }

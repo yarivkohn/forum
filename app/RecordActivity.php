@@ -19,12 +19,15 @@ trait RecordActivity
         if(auth()->guest()){
             return;
         }
-        static::created(function($thread){
-            $thread->recordActivity($thread);
-        });
+        foreach(static::getRecordEvents() as $event) {
+            static::$event(function($model){
+                $model->recordActivity($model);
+            });
+        }
+
     }
 
-    public function getRecordEvents()
+    public static function getRecordEvents()
     {
         return ['created'];
     }

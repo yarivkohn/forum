@@ -14,6 +14,11 @@ use ReflectionClass;
 trait RecordActivity
 {
 
+    /**
+     * This is a Magical function.
+     * The naming convention is boot followed by Trait name.
+     * The function will auto-run every time the trait loads.
+     */
     public static function bootRecordActivity()
     {
         if(auth()->guest()){
@@ -27,6 +32,12 @@ trait RecordActivity
 
     }
 
+    /**
+     * If we need to listen to different/other/more events (i.e deleted)
+     * it is possible to override this function in the relevant model.
+     * 
+     * @return array
+     */
     public static function getRecordEvents()
     {
         return ['created'];

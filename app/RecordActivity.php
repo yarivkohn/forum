@@ -35,7 +35,7 @@ trait RecordActivity
     /**
      * If we need to listen to different/other/more events (i.e deleted)
      * it is possible to override this function in the relevant model.
-     * 
+     *
      * @return array
      */
     public static function getRecordEvents()

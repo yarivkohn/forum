@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Activity;
+use Carbon\Carbon;
 use Tests\DataBaseTestCase;
 
 class ActivityTest extends DataBaseTestCase
@@ -34,8 +35,33 @@ class ActivityTest extends DataBaseTestCase
     public function it_records_activity_when_a_reply_is_created()
     {
         $this->signIn();
-        $reply = create('App\Reply');
-
+        create('App\Reply');
         $this->assertEquals(2, Activity::count());
+    }
+
+    /**
+     * @test
+     */
+    public function it_fetches_a_feed_for_any_user()
+    {
+        $this->signIn();
+        // A new thread from today
+        create('App\Thread', ['user_id' => auth()->id()]);
+        // An old thread from a week ago
+        create('App\Thread', [
+            'user_id' => auth()->id(),
+            'created_at' => Carbon::now()->subWeek(),
+            ]);
+
+        //This is for the purpose of the test only, This is the quickest way to make the reply dated to a week ago
+        auth()->user()->activity()->first()->update(['created_at' => Carbon::now()->subWeek()]);
+
+        $feed = Activity::feed(auth()->user());
+
+        $this->assertTrue($feed->keys()
+            ->contains(Carbon::now()->format('Y-m-d')));
+
+        $this->assertTrue($feed->keys()
+            ->contains(Carbon::now()->subWeek()->format('Y-m-d')));
     }
 }

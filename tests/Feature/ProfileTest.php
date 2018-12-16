@@ -26,10 +26,10 @@ class ProfileTest extends DataBaseTestCase
      */
     public function profiles_display_all_threads_created_by_the_associated_user()
     {
-        $user = create('App\User');
-        $thread = create('App\Thread', ['user_id' => $user->id]);
+        $this->signIn();
+         $thread = create('App\Thread', ['user_id' => auth()->id()]);
 
-        $this->get("/profile/{$user->name}")
+        $this->get("/profile/".auth()->user()->name)
             ->assertSee($thread->title)
             ->assertSee($thread->body);
 

@@ -106,13 +106,16 @@ class CreateThreadsTest extends DataBaseTestCase
     {
         $this->withExceptionHandling();
         $thread = create('App\Thread');
+
         //User is not signed in
         $this->json('DELETE', $thread->path())
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
         // User is signed in, However this is not his post
+
         $this->signIn();
+
         $this->json('DELETE', $thread->path())
-            ->assertStatus(Response::HTTP_UNAUTHORIZED);
+            ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
     /**

@@ -30,7 +30,12 @@ trait RecordActivity
             });
         }
 
+        static::deleting(function($model){
+            $model->activity()->delete();
+        });
     }
+
+
 
     /**
      * If we need to listen to different/other/more events (i.e deleted)

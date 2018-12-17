@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Activity;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\DataBaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -131,7 +132,20 @@ class CreateThreadsTest extends DataBaseTestCase
         $response->assertStatus(Response::HTTP_FOUND);
 
         $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
+
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+
+//        $this->assertDatabaseMissing('activities', [
+//            'subject_id' => $thread->id,
+//            'subject_type' => get_class($thread),
+//        ]);
+//
+//        $this->assertDatabaseMissing('activities', [
+//            'subject_id' => $reply->id,
+//            'subject_type' => get_class($reply),
+//        ]);
+
+        $this->assertEquals(0, Activity::count());
     }
 
 }

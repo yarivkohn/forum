@@ -20,8 +20,15 @@ class Thread extends Model
             $builder->withCount('replies');
         });
 
+//        With this implementation we are deleting all off the replies as instance w/o triggering any events
+//        static::deleting(function($thread){
+//            $thread->replies()->delete();
+//        });
+//      With this implementation we are deleting the replies one by one and therefore triggering events per deletion
         static::deleting(function($thread){
-            $thread->replies()->delete();
+            $thread->replies->each(function($reply){
+                $reply->delete();
+            });
         });
 
 // This is now being replaced with the global param $with

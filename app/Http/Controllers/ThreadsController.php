@@ -63,7 +63,8 @@ class ThreadsController extends Controller
             'title' => request('title'),
             'body' => $request->get('body'),
         ]);
-        return redirect($thread->path());
+        return redirect($thread->path())
+            ->with('flash', 'Your thread has been published');
     }
 
     /**
@@ -109,6 +110,7 @@ class ThreadsController extends Controller
      * @param Channel $channel
      * @param  \App\Thread $thread
      * @return array
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(Channel $channel, Thread $thread)
     {
@@ -126,7 +128,8 @@ class ThreadsController extends Controller
             ],
                 Response::HTTP_UNAUTHORIZED);
         }
-        return redirect('/threads/');
+        return redirect('/threads/')
+            ->with('flash', 'Your thread has been deleted.');
     }
 
     /**

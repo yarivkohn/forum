@@ -14,7 +14,9 @@
                 @foreach($activities as  $date => $activityGroup)
                     <h3> {{ $date  }} </h3>
                     @foreach($activityGroup as $activity)
-                        @include ("profiles.activities.$activity->type")
+                        @if(view()->exists("profiles.activities.$activity->type"))
+                            @include ("profiles.activities.$activity->type")
+                        @endif
                     @endforeach
                 @endforeach
                 {{--{{ $threads->links() }}--}}

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\ProfilesController;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -77,5 +78,36 @@ class ParticipateInForumTest extends TestCase
             ->assertStatus(Response::HTTP_FOUND);
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
 
+    }
+
+
+    /**
+     * @test
+     */
+    public function unauthorized_users_can_not_update_replies()
+    {
+        $this->withExceptionHandling();
+
+        $reply = create('App\Reply');
+
+        $this->patch("/replies/{$reply->id}", ['body' => 'This is not going to happen'])
+            ->assertRedirect('login');
+
+        $this->signIn()
+            ->patch("/replies/{$reply->id}")
+            ->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+
+    /**
+     * @test
+     */
+    public function authorized_users_can_update_replies()
+    {
+        $updateBodyText = 'New updated reply body';
+        $this->signIn();
+        $reply = create('App\Reply', ['user_id' => auth()->id()]);
+        $this->patch("/replies/{$reply->id}", ['body' => $updateBodyText]);
+        $this->assertDatabaseHas('replies', ['id' => $reply->id, 'body' => $updateBodyText]);
     }
 }

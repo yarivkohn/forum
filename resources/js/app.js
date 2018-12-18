@@ -21,6 +21,7 @@ window.events =  new Vue();
 
 Vue.component('flash', require('./components/Flash.vue'));
 Vue.component('reply', require('./components/Reply.vue'));
+// Vue.component('favorite', require('./components/Favotire.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))

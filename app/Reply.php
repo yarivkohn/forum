@@ -13,6 +13,11 @@ class Reply extends Model
 
     protected $with = ['owner', 'favorites', ];
 
+    // Evert time this model is cast to array/json it will auto add this attribute
+    // The attribute naming convention is get_FEATURE_NAME_Attribute where in our case _FEATURE_NAME_ is FavoritesCount
+    // Function getFavoritesCountAttribute is located in the favoritable trait.
+    protected $appends = ['favoritesCount', 'isFavorited'];
+
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id');

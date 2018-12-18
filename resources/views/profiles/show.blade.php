@@ -11,14 +11,16 @@
                     </h1>
                 </div>
 
-                @foreach($activities as  $date => $activityGroup)
+                @forelse($activities as  $date => $activityGroup)
                     <h3> {{ $date  }} </h3>
                     @foreach($activityGroup as $activity)
                         @if(view()->exists("profiles.activities.$activity->type"))
                             @include ("profiles.activities.$activity->type")
                         @endif
                     @endforeach
-                @endforeach
+                @empty
+                    <p>There are currently no activities for this user</p>
+                @endforelse
                 {{--{{ $threads->links() }}--}}
             </div>
         </div>

@@ -6,14 +6,11 @@
                     <a href="/profile/{{ $reply->owner->name }}">{{ $reply->owner->name }}</a>
                     said {{ $reply->created_at->diffForHumans() }}...
                 </h5>
-                <div>
-                    <favorite :reply="{{ $reply }}"></favorite>
-                    {{--<form action="/replies/{{ $reply->id }}/favorites" METHOD="POST">--}}
-                        {{--{{ csrf_field() }}--}}
-
-                        {{--</button>--}}
-                    {{--</form>--}}
-                </div>
+                @if(Auth::check())
+                    <div>
+                        <favorite :reply="{{ $reply }}"></favorite>
+                    </div>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -25,7 +22,7 @@
                 </div>
 
             </div>
-            <div v-else class="body" >@{{ body }}</div>
+            <div v-else class="body">@{{ body }}</div>
         </div>
 
         @can('update', $reply)

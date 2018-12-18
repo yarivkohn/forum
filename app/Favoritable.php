@@ -11,6 +11,17 @@ namespace App;
 
 trait Favoritable
 {
+    public static function bootFavoritable()
+    {
+        static::deleting(function($model){
+            $model->favorites
+                ->get()
+                ->each(function($favorite){
+                    $favorite->delete();
+                });
+        });
+    }
+
     public function favorites()
     {
         return $this->morphMany(Favorite::class, 'favorited');
@@ -27,7 +38,19 @@ trait Favoritable
     public function unfavorite()
     {
         $attributes = ['user_id' => auth()->id()];
-        $this->favorites()->where($attributes)->delete();
+// In laravel the following line will produce a SQL query that will delete the relevant favorite
+// The problem is that this will not go through the model, hence will not trigger the 'delete' listener
+// and the activities will not be deleted.
+//        $this->favorites()->where($attributes)->delete();
+
+// The solution goes as follow:
+// We will get the collection and will delete the favorites one by one
+        $this->favorites
+            ->where($attributes)
+            ->get()
+            ->each(function($favorite) {
+                $favorite->delete();
+            });
     }
 
     public function isFavorited()

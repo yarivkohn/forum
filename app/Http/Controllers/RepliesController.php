@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Reply;
 use App\Thread;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class RepliesController extends Controller
 {
@@ -25,5 +27,17 @@ class RepliesController extends Controller
         );
         return back()
             ->with('flash', 'Your reply has been left.');
+    }
+
+    public function destroy(Reply $reply )
+    {
+//        if($reply->user_id != auth()->id()) {
+//            return response([], Response::HTTP_FORBIDDEN);
+//        }
+
+        $this->authorize('update', $reply);
+        $reply->delete();
+
+        return back();
     }
 }

@@ -43,10 +43,8 @@ trait Favoritable
 // We will get the collection and will delete the favorites one by one
         $this->favorites
             ->where($attributes)
-            ->get()
-            ->each(function($favorite) {
-                $favorite->delete();
-            });
+            ->each
+            ->delete();
     }
 
     public function isFavorited()

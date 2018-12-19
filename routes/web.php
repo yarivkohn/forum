@@ -22,6 +22,7 @@ Route::get('/threads', 'ThreadsController@index');
 Route::get('/threads/create', 'ThreadsController@create');
 Route::get('/threads/{channel}', 'ThreadsController@index');
 Route::get('/threads/{channel}/{thread}', 'ThreadsController@show');
+Route::get('/threads/{channel}/{thread}/replies', 'RepliesController@index');
 Route::delete('/threads/{channel}/{thread}', 'ThreadsController@destroy');
 Route::get('/profile/{user}', "ProfilesController@show")->name('profile');
 

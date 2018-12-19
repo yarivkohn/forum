@@ -1,8 +1,11 @@
 <template>
-    <button type="submit" :class="computedClass" @click="toggle">
-        <span class="glyphicon glyphicon-heart"></span>
+    <span>
+        <button type="submit" class="btn btn-link" @click="toggle">
+            <i :class="computedClass"></i>
+        </button>
         <span v-text="count"></span>
-    </button>
+    </span>
+
 </template>
 
 <script>
@@ -10,12 +13,13 @@
         props: ['reply'],
         data() {
             return {
-                count : this.reply.favoritesCount,
-                active : this.reply.isFavorited
+                count : this.reply.data.favoritesCount,
+                active : this.reply.data.isFavorited
             }
         },
         methods : {
             toggle() {
+                console.log(this.active);
                 return this.active ? this.destroy() : this.create();
                 },
             create() {
@@ -32,10 +36,11 @@
         },
         computed: {
             computedClass() {
-                return ['btn', this.active? 'btn-primary' : 'btn-default'];
+                // return ['btn', this.active? 'btn-primary' : 'btn-default'];
+                return ['fa-heart', this.active? 'fas heart-red' : 'far heart-black'];
             },
             endPoint() {
-                return '/replies/' + this.reply.id + '/favorites';
+                return '/replies/' + this.reply.data.id + '/favorites';
             }
         }
 

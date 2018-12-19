@@ -14,11 +14,7 @@ trait Favoritable
     public static function bootFavoritable()
     {
         static::deleting(function($model){
-            $model->favorites
-                ->get()
-                ->each(function($favorite){
-                    $favorite->delete();
-                });
+            $model->favorites->each->delete();
         });
     }
 

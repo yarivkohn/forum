@@ -41,10 +41,11 @@ trait Favoritable
 
 // The solution goes as follow:
 // We will get the collection and will delete the favorites one by one
-        $this->favorites
+        $this->favorites()
             ->where($attributes)
-            ->each(function($favorite){
-               $favorite->delete();
+            ->get()
+            ->each(function($favorite) {
+                $favorite->delete();
             });
     }
 

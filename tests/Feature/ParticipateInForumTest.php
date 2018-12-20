@@ -29,12 +29,13 @@ class ParticipateInForumTest extends TestCase
         //Given we have an authenticated user
         $this->signIn($user = factory('App\User')->create());
         // And an existing Thread
+
         $thread = factory('App\Thread')->create();
         //When a user adds a reply to the threads
         $reply = factory('App\Reply')->make();
         $this->post($thread->path().'/replies', $reply->toArray());
-        $this->get($thread->path())
-            ->assertSee($reply->body);
+
+        $this->assertDatabaseHas('replies', ['body' => $reply->body]);
 
     }
 

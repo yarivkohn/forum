@@ -16,9 +16,10 @@ class Thread extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope('replyCount', function($builder){
-            $builder->withCount('replies');
-        });
+        //This eager loading was replace with a new Db column in the threads table
+//        static::addGlobalScope('replyCount', function($builder){
+//            $builder->withCount('replies');
+//        });
 
 //        With this implementation we are deleting all off the replies as instance w/o triggering any events
 //        static::deleting(function($thread){

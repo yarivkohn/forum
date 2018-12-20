@@ -35,6 +35,7 @@ class FavoriteTest extends DataBaseTestCase
     {
         $this->signIn();
         $reply = create('App\Reply');
+
         // We can use $reply->favorite() instead of the following 2 rows.
         // We know this works due to other tests that we run.
         // If we use this approach than $reply-favorites in not being calculated here, and no use of fresh() is due on the following assertion.

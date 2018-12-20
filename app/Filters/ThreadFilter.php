@@ -10,7 +10,7 @@ namespace App\Filters;
 
 class ThreadFilter extends AbstractFilters
 {
-    protected $filters = ['by', 'popular'];
+    protected $filters = ['by', 'popular', 'unanswered'];
 
     /**
      * Filter Threads by username
@@ -32,5 +32,10 @@ class ThreadFilter extends AbstractFilters
     {
         $this->builder->getQuery()->orders = [];
         return $this->builder->orderBy('replies_count', 'desc');
+    }
+
+    protected function unanswered()
+    {
+        return $this->builder->where('replies_count', 0);
     }
 }

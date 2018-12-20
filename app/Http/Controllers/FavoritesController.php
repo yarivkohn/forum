@@ -17,6 +17,7 @@ class FavoritesController extends Controller
 
     /**
      * @param Reply $reply
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Reply $reply)
     {

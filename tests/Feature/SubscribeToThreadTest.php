@@ -16,14 +16,8 @@ class SubscribeToThreadTest extends DataBaseTestCase
         $thread = create('App\Thread');
         // And a user subscribe to that thread
         $this->post($thread->path(). '/subscription');
+        $this->assertCount(1, $thread->fresh()->subscriptions);
 
-        // Then each time a reply is left...
-        $thread->addReply([
-            'user_id' => auth()->id(),
-            'body' => 'A reply',
-        ]);
-        // A notification should be prepared for the subscriber
-//        $this->assertEquals(1, auth()->user()->notifications);
     }
 
     /**

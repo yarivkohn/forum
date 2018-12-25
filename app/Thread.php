@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\ThreadWasUpdated;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -28,8 +29,8 @@ class Thread extends Model
 //            $thread->replies()->delete();
 //        });
 //      With this implementation we are deleting the replies one by one and therefore triggering events per deletion
-        static::deleting(function($thread){
-            $thread->replies->each(function($reply){
+        static::deleting(function ($thread) {
+            $thread->replies->each(function ($reply) {
                 $reply->delete();
             });
         });
@@ -72,7 +73,16 @@ class Thread extends Model
 
     public function addReply($reply)
     {
-        return $this->replies()->create($reply);
+        $reply = $this->replies()->create($reply);
+        //Prepare notifications for all subscribers
+        $this->subscriptions->filter(function ($subscription) use ($reply) {
+            return $subscription->user_id != $reply->user_id;
+        })
+//            ->each->notify($reply); // This is a replacement for the following each function.
+
+            ->each(function ($subscription) use ($reply) {
+                $subscription->notify($reply);
+            });
     }
 
     public function scopeFilter($query, $filters)
@@ -86,12 +96,13 @@ class Thread extends Model
             ->create([
                 'user_id' => $userId ? $userId : auth()->id(),
             ]);
+        return $this;
     }
 
     public function unsubscribe($userId = null)
     {
         $this->subscriptions()
-            ->where('user_id',$userId ? $userId : auth()->id())
+            ->where('user_id', $userId ? $userId : auth()->id())
             ->delete();
     }
 

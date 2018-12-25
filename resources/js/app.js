@@ -9,6 +9,15 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+Vue.prototype.authorized = function(handler) {
+    let user = window.App.user;
+    return user ? handler(user) : false;
+    // return handler(window.App.user);
+};
+
+window.events =  new Vue();
+
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -17,7 +26,10 @@ window.Vue = require('vue');
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('flash', require('./components/Flash.vue'));
+Vue.component('paginator', require('./components/Paginator.vue'));
+Vue.component('thread-view', require('./pages/Thread.vue'));
+// Vue.component('favorite', require('./components/Favotire.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\ThreadFilter;
 use App\Channel;
 use App\Thread;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -72,9 +73,14 @@ class ThreadsController extends Controller
      *
      * @param  \App\Thread $thread
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function show($channelId, Thread $thread)
     {
+        //Record that the subscriber has visited this link
+        if(auth()->check()){
+            auth()->user()->read($thread);
+        }
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(20),

@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Notifications\ThreadWasUpdated;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -67,8 +68,8 @@ class ThreadTest extends TestCase
     {
         Notification::fake( );
         $this->signIn();
-        $this->thread->subscribe();
-        $this->thread->addReply([
+        $this->thread->subscribe()
+        ->addReply([
             'body' =>'FooBar',
             'user_id' => 1
         ]);
@@ -136,6 +137,21 @@ class ThreadTest extends TestCase
         $this->assertFalse($thread->isSubscribedTo);
         $thread->subscribe();
         $this->assertTrue($thread->isSubscribedTo);
+
+    }
+
+    /**
+     * @test
+     */
+    public function a_thread_can_check_if_subscriber_has_read_all_replies()
+    {
+        $this->signIn();
+        $thread = create('App\Thread');
+        tap(auth()->user(), function($user) use($thread){
+            $this->assertTrue($thread->hasUpdatesFor($user));
+            $user->read($thread);
+            $this->assertFalse($thread->hasUpdatesFor($user));
+        });
 
     }
 }

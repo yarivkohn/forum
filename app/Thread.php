@@ -83,6 +83,7 @@ class Thread extends Model
             ->each(function ($subscription) use ($reply) {
                 $subscription->notify($reply);
             });
+        return $reply;
     }
 
     public function scopeFilter($query, $filters)

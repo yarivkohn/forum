@@ -14,7 +14,7 @@
             <ul class="navbar-nav mr-auto">
                 <li>
                     <div class="dropdown">
-                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                        <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Browse
                         </a>
@@ -32,7 +32,7 @@
                 <li><a class="nav-link" href="/threads/create">New Thread</a></li>
                 <li>
                     <div class="dropdown">
-                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                        <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Channels
                         </a>
@@ -48,6 +48,7 @@
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav ml-auto">
+                <user-notifications></user-notifications>
                 <!-- Authentication Links -->
                 @guest
                     <li class="nav-item">

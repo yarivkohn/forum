@@ -30852,7 +30852,7 @@ function applyToTag (styleElement, obj) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(141);
-module.exports = __webpack_require__(197);
+module.exports = __webpack_require__(200);
 
 
 /***/ }),
@@ -30889,6 +30889,7 @@ window.events = new Vue();
 Vue.component('flash', __webpack_require__(167));
 Vue.component('paginator', __webpack_require__(173));
 Vue.component('thread-view', __webpack_require__(176));
+Vue.component('user-notifications', __webpack_require__(197));
 // Vue.component('favorite', require('./components/Favotire.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
@@ -64472,7 +64473,8 @@ var render = function() {
                   value: _vm.prevUrl,
                   expression: "prevUrl"
                 }
-              ]
+              ],
+              staticClass: "page-item"
             },
             [
               _c(
@@ -64505,7 +64507,8 @@ var render = function() {
                   value: _vm.nextUrl,
                   expression: "nextUrl"
                 }
-              ]
+              ],
+              staticClass: "page-item"
             },
             [
               _c(
@@ -65783,6 +65786,155 @@ if (false) {
 
 /***/ }),
 /* 197 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(198)
+/* template */
+var __vue_template__ = __webpack_require__(199)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/userNotifications.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-fce73cbc", Component.options)
+  } else {
+    hotAPI.reload("data-v-fce73cbc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 198 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            notifications: []
+        };
+    },
+    created: function created() {
+        var _this = this;
+
+        axios.get('/profile/' + window.App.user.name + '/notifications').then(function (response) {
+            _this.notifications = response.data;
+        }).catch(function (error) {
+            return console.log(error);
+        });
+    },
+
+    methods: {
+        //"/profile/{$user->name}/notifications/".$user->unreadNotifications->first()->id
+        markAsRead: function markAsRead(notification) {
+            var endPoint = "/profile/" + window.App.user.name + "/notifications/" + notification.id;
+            axios.delete(endPoint);
+        }
+    }
+});
+
+/***/ }),
+/* 199 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.notifications.length
+    ? _c("li", { staticClass: "dropdown" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c(
+          "ul",
+          { staticClass: "dropdown-menu" },
+          _vm._l(_vm.notifications, function(notification) {
+            return _c("li", [
+              _c("a", {
+                staticClass: "dropdown-item",
+                attrs: { href: notification.data.link },
+                domProps: { textContent: _vm._s(notification.data.message) },
+                on: {
+                  click: function($event) {
+                    _vm.markAsRead(notification)
+                  }
+                }
+              })
+            ])
+          })
+        )
+      ])
+    : _vm._e()
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "nav-link",
+        attrs: { href: "#", "data-toggle": "dropdown" }
+      },
+      [_c("span", { staticClass: "fas fa-bell" })]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-fce73cbc", module.exports)
+  }
+}
+
+/***/ }),
+/* 200 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

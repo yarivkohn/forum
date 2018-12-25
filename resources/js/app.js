@@ -29,6 +29,7 @@ window.events =  new Vue();
 Vue.component('flash', require('./components/Flash.vue'));
 Vue.component('paginator', require('./components/Paginator.vue'));
 Vue.component('thread-view', require('./pages/Thread.vue'));
+Vue.component('user-notifications', require('./components/userNotifications.vue'));
 // Vue.component('favorite', require('./components/Favotire.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)

@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Notifications\ThreadWasUpdated;
+use App\Providers\ThreadHasNewReply;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -75,14 +76,25 @@ class Thread extends Model
     {
         $reply = $this->replies()->create($reply);
         //Prepare notifications for all subscribers
-        $this->subscriptions->filter(function ($subscription) use ($reply) {
-            return $subscription->user_id != $reply->user_id;
-        })
-//            ->each->notify($reply); // This is a replacement for the following each function.
+// option #4
+        $this->notifySubscribers($reply);
+// option #3
+//        event(new ThreadHasNewReply($this, $reply));
+//Option #2
+//        $this->subscriptions
+//            ->where('user_id', '!=', $reply->user_id)
+//            ->each
+//            ->notify($reply);
 
-            ->each(function ($subscription) use ($reply) {
-                $subscription->notify($reply);
-            });
+// Option #1
+//        $this->subscriptions->filter(function ($subscription) use ($reply) {
+//            return $subscription->user_id != $reply->user_id;
+//        })
+//            ->each->notify($reply); // This is a replacement for the following each function.
+// Option #1b
+//            ->each(function ($subscription) use ($reply) {
+//                $subscription->notify($reply);
+//            });
         return $reply;
     }
 
@@ -123,5 +135,16 @@ class Thread extends Model
         return $this->subscriptions()
             ->where(['user_id' => auth()->id()])
             ->exists();
+    }
+
+    /**
+     * @param $reply
+     */
+    private function notifySubscribers($reply): void
+    {
+        $this->subscriptions
+            ->where('user_id', '!=', $reply->user_id)
+            ->each
+            ->notify($reply);
     }
 }

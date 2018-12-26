@@ -119,7 +119,6 @@ class ParticipateInForumTest extends TestCase
      */
     public function reply_that_contain_spam_may_not_be_created()
     {
-        $this->withExceptionHandling();
         //Given we have an authenticated user
         $this->signIn($user = factory('App\User')->create());
         // And an existing Thread
@@ -130,7 +129,7 @@ class ParticipateInForumTest extends TestCase
         $reply = make('App\Reply', [
             'body' => 'Yahoo Customer Support'
         ]);
-        $this->json($thread->path() . '/replies', $reply->toArray())
+        $this->post($thread->path() . '/replies', $reply->toArray())
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 

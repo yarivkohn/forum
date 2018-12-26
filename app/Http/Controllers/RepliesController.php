@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Channel;
-use App\Http\Requests\CreatePostRequest;
 use App\Reply;
 use App\Inspections\Spam;
 use App\Thread;
@@ -29,30 +28,39 @@ class RepliesController extends Controller
     /**
      * @param $channelId
      * @param Thread $thread
-     * @param CreatePostRequest $form
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
-    public function store($channelId, Thread $thread, CreatePostRequest $form)
+    public function store($channelId, Thread $thread)
     {
-//        instead of using the Gate we now use the CreatePostForm
-//         if(Gate::denies('create', new Reply)) {
-//            return response(
-//                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
-//            );
-//        }
-        // Thre return addReply now moved to the CreatePostForm as well under the function persist
-//        return $form->persist($thread);
-           return $thread->addReply([
+        if(Gate::denies('create', new Reply)) {
+            return response(
+                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        try {
+            $this->authorize('create', new Reply);
+            $this->validate(request(), [
+                'body' => 'required|spamfree'
+            ]);
+            $reply = $thread->addReply([
                     'body' => request('body'),
                     'user_id' => auth()->id()
                 ]
-            )->load('owner');
+            );
+            return $reply->load('owner');
 // This catch block was replace with the Gate facade within this function
 //        }
 // catch (AuthorizationException $ex) {
 //            return response(
 //                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
 //            );
+        } catch (\Exception $ex) {
+            return response(
+                'Sorry, yor reply could not be saved at this time.', Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
     }
 
     /**

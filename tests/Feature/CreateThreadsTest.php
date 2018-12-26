@@ -74,7 +74,7 @@ class CreateThreadsTest extends DataBaseTestCase
         ];
         foreach($assertions as $candidate => $value){
             $this->publishThread([$candidate => $value])
-                ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+                ->assertSessionHasErrors($candidate);
         }
     }
 
@@ -86,7 +86,7 @@ class CreateThreadsTest extends DataBaseTestCase
     {
         factory('App\Channel',2)->create();
         $this->publishThread(['channel_id' => 999])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+            ->assertSessionHasErrors('channel_id');
     }
 
     /**
@@ -97,7 +97,7 @@ class CreateThreadsTest extends DataBaseTestCase
     {
         $this->withExceptionHandling()->signIn();
         $thread = make('App\Thread', $overrides);
-        return $this->json('/threads', $thread->toArray());
+        return $this->post('/threads', $thread->toArray());
     }
 
     /**

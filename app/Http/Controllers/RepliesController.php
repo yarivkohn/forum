@@ -31,7 +31,9 @@ class RepliesController extends Controller
     public function store($channelId, Thread $thread)
     {
         try {
-            $this->validateReply();
+            $this->validate(request(), [
+                'body' => 'required | spamfree'
+            ]);
             $reply = $thread->addReply([
                     'body' => request('body'),
                     'user_id' => auth()->id()
@@ -48,14 +50,15 @@ class RepliesController extends Controller
     /**
      * @param Reply $reply
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
      */
     public function update(Reply $reply)
     {
         try {
             $this->authorize('update', $reply);
-            $this->validateReply();
+            $this->validate(request(), [
+                'body' => 'required | spamfree'
+            ]);
             $reply->update([
                 'body' => request('body'),
             ]);
@@ -79,16 +82,5 @@ class RepliesController extends Controller
             return response(['status' => 'Reply deleted']);
         }
         return back();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function validateReply()
-    {
-        $this->validate(request(), [
-            'body' => 'required'
-        ]);
-        resolve(Spam::class)->detect(request('body'));
     }
 }

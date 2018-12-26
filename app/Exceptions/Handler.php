@@ -2,8 +2,11 @@
 
 namespace App\Exceptions;
 
+use App\Http\Exceptions\ThrottleException;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class Handler extends ExceptionHandler
 {
@@ -47,6 +50,15 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if($exception instanceof ValidationException) {
+            if(request()->expectsJson()){
+                return response('Sorry. Validation has failed', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
+        if($exception instanceof ThrottleException) {
+            return response($exception->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         return parent::render($request, $exception);
     }
 }

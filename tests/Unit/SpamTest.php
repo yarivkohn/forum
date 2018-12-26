@@ -16,7 +16,6 @@ class SpamTest extends TestCase
     {
         $spam = new Spam();
 
-        $this->assertFalse($spam->detect('Yahoo Customer Service'));
-//        $this->assertTrue($spam->detect('Reply contains SPAM'));
+        $this->assertFalse($spam->detect('An innocent reply'));
     }
 }

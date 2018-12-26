@@ -35,7 +35,7 @@ class Spam
     private function detectInvalidKeyWords($body)
     {
         $invalidKeyWords = [
-            'yahoo customers support',
+            'yahoo customer support',
         ];
 
         foreach ($invalidKeyWords as $keyWord) {

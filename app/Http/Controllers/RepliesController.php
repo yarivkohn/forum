@@ -6,7 +6,9 @@ use App\Channel;
 use App\Reply;
 use App\Inspections\Spam;
 use App\Thread;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,7 +33,14 @@ class RepliesController extends Controller
      */
     public function store($channelId, Thread $thread)
     {
+        if(Gate::denies('create', new Reply)) {
+            return response(
+                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
         try {
+            $this->authorize('create', new Reply);
             $this->validate(request(), [
                 'body' => 'required|spamfree'
             ]);
@@ -41,6 +50,12 @@ class RepliesController extends Controller
                 ]
             );
             return $reply->load('owner');
+// This catch block was replace with the Gate facade within this function
+//        }
+// catch (AuthorizationException $ex) {
+//            return response(
+//                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
+//            );
         } catch (\Exception $ex) {
             return response(
                 'Sorry, yor reply could not be saved at this time.', Response::HTTP_UNPROCESSABLE_ENTITY

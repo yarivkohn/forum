@@ -132,4 +132,22 @@ class ParticipateInForumTest extends TestCase
         $this->post($thread->path() . '/replies', $reply->toArray())
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    /**
+     * @test
+     */
+    public function users_may_only_reply_a_maximum_of_one_per_minute()
+    {
+        $this->signIn();
+        $thread = create('App\Thread');
+        $reply = make('App\Reply', [
+            'body' => 'This is not a SPAM'
+        ]);
+
+        $this->post($thread->path(). '/replies', $reply->toArray())
+        ->assertStatus(Response::HTTP_CREATED);
+
+        $this->post($thread->path(). '/replies', $reply->toArray())
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 }

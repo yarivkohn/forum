@@ -49,7 +49,7 @@ class ParticipateInForumTest extends TestCase
         $this->withExceptionHandling()->signIn();
         $thread = create('App\Thread');
         $reply = make('App\Reply', ['body' => null]);
-        $this->post($thread->path() . '/replies', $reply->toArray())
+        $this->postJson($thread->path() . '/replies', $reply->toArray())
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
@@ -119,6 +119,7 @@ class ParticipateInForumTest extends TestCase
      */
     public function reply_that_contain_spam_may_not_be_created()
     {
+        $this->withExceptionHandling();
         //Given we have an authenticated user
         $this->signIn($user = factory('App\User')->create());
         // And an existing Thread
@@ -129,7 +130,7 @@ class ParticipateInForumTest extends TestCase
         $reply = make('App\Reply', [
             'body' => 'Yahoo Customer Support'
         ]);
-        $this->post($thread->path() . '/replies', $reply->toArray())
+        $this->json('post', $thread->path() . '/replies', $reply->toArray())
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
@@ -138,6 +139,7 @@ class ParticipateInForumTest extends TestCase
      */
     public function users_may_only_reply_a_maximum_of_one_per_minute()
     {
+        $this->withExceptionHandling();
         $this->signIn();
         $thread = create('App\Thread');
         $reply = make('App\Reply', [
@@ -148,6 +150,6 @@ class ParticipateInForumTest extends TestCase
         ->assertStatus(Response::HTTP_CREATED);
 
         $this->post($thread->path(). '/replies', $reply->toArray())
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+            ->assertStatus(Response::HTTP_TOO_MANY_REQUESTS);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Channel;
+use App\Http\Form\CreatePostForm;
 use App\Reply;
 use App\Inspections\Spam;
 use App\Thread;
@@ -28,39 +29,32 @@ class RepliesController extends Controller
     /**
      * @param $channelId
      * @param Thread $thread
+     * @param CreatePostForm $form
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Http\RedirectResponse
-     * @throws \Exception
      */
-    public function store($channelId, Thread $thread)
+    public function store($channelId, Thread $thread, CreatePostForm $form)
     {
-        if(Gate::denies('create', new Reply)) {
-            return response(
-                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
+//        This Gate check was replaced with the CreateFormRequest@authorize
 
-        try {
+//        if(Gate::denies('create', new Reply)) {
+//            return response(
+//                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
+//            );
+//        }
+
             $this->authorize('create', new Reply);
-            $this->validate(request(), [
-                'body' => 'required|spamfree'
-            ]);
-            $reply = $thread->addReply([
+            return $thread->addReply([
                     'body' => request('body'),
                     'user_id' => auth()->id()
                 ]
-            );
-            return $reply->load('owner');
+            )->load('owner');
+
 // This catch block was replace with the Gate facade within this function
 //        }
 // catch (AuthorizationException $ex) {
 //            return response(
 //                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
 //            );
-        } catch (\Exception $ex) {
-            return response(
-                'Sorry, yor reply could not be saved at this time.', Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
     }
 
     /**

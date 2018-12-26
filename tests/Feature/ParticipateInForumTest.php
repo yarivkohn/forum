@@ -24,7 +24,7 @@ class ParticipateInForumTest extends TestCase
     /**
      * @test
      */
-    public function  an_authenticated_user_may_participate_in_forum_threads()
+    public function an_authenticated_user_may_participate_in_forum_threads()
     {
         //Given we have an authenticated user
         $this->signIn($user = factory('App\User')->create());
@@ -33,7 +33,7 @@ class ParticipateInForumTest extends TestCase
         $thread = factory('App\Thread')->create();
         //When a user adds a reply to the threads
         $reply = factory('App\Reply')->make();
-        $this->post($thread->path().'/replies', $reply->toArray());
+        $this->post($thread->path() . '/replies', $reply->toArray());
 
         $this->assertDatabaseHas('replies', ['body' => $reply->body]);
         $this->assertEquals(1, $thread->fresh()->replies_count);
@@ -47,8 +47,8 @@ class ParticipateInForumTest extends TestCase
     {
         $this->withExceptionHandling()->signIn();
         $thread = create('App\Thread');
-        $reply = make('App\Reply',['body' => null]);
-        $this->post($thread->path().'/replies', $reply->toArray())
+        $reply = make('App\Reply', ['body' => null]);
+        $this->post($thread->path() . '/replies', $reply->toArray())
             ->assertSessionHasErrors('body');
     }
 
@@ -80,7 +80,7 @@ class ParticipateInForumTest extends TestCase
             ->assertStatus(Response::HTTP_FOUND);
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
         $this->assertEquals(0, $reply->thread->fresh()->replies_count);
-     }
+    }
 
 
     /**
@@ -111,5 +111,25 @@ class ParticipateInForumTest extends TestCase
         $reply = create('App\Reply', ['user_id' => auth()->id()]);
         $this->patch("/replies/{$reply->id}", ['body' => $updateBodyText]);
         $this->assertDatabaseHas('replies', ['id' => $reply->id, 'body' => $updateBodyText]);
+    }
+
+    /**
+     * @test
+     */
+    public function reply_that_contain_spam_may_not_be_created()
+    {
+        //Given we have an authenticated user
+        $this->signIn($user = factory('App\User')->create());
+        // And an existing Thread
+
+        $thread = factory('App\Thread')->create();
+        //When a user adds a reply which contain spam to the threads
+
+        $reply = make('App\Reply', [
+            'body' => 'Yahoo Customer Support'
+        ]);
+
+        $this->expectException(\Exception::class);
+        $this->post($thread->path() . '/replies', $reply->toArray());
     }
 }

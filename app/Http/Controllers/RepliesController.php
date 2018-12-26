@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Channel;
 use App\Reply;
+use App\Spam;
 use App\Thread;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class RepliesController extends Controller
         return $thread->replies()->paginate(20);
     }
 
-    public function store($channelId, Thread $thread)
+    public function store($channelId, Thread $thread, Spam $spam)
     {
         $this->validate(request(), [
             'body' => 'required'
@@ -31,6 +32,12 @@ class RepliesController extends Controller
                 'user_id' => auth()->id()
             ]
         );
+
+        $spam->detect(request('body'));
+
+//        if(stripos(request('body'), 'Yahoo Customer support') !== false ) {
+//            throw new \Exception('Spam alert');
+//        }
 
         if(request()->expectsJson()){
             return $reply->load('owner');

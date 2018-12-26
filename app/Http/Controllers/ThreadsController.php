@@ -81,6 +81,7 @@ class ThreadsController extends Controller
         if(auth()->check()){
             auth()->user()->read($thread);
         }
+
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(20),

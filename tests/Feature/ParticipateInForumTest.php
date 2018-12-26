@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\ProfilesController;
+use App\Inspections\SpamDetectedException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -129,7 +130,7 @@ class ParticipateInForumTest extends TestCase
             'body' => 'Yahoo Customer Support'
         ]);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(SpamDetectedException::class);
         $this->post($thread->path() . '/replies', $reply->toArray());
     }
 }

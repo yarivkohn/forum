@@ -30,34 +30,44 @@ class RepliesController extends Controller
      */
     public function store($channelId, Thread $thread)
     {
-        $this->validateReply();
-        $reply = $thread->addReply([
-                'body' => request('body'),
-                'user_id' => auth()->id()
-            ]
-        );
-        if(request()->expectsJson()){
+        try {
+            $this->validateReply();
+            $reply = $thread->addReply([
+                    'body' => request('body'),
+                    'user_id' => auth()->id()
+                ]
+            );
             return $reply->load('owner');
+        } catch (\Exception $ex) {
+            return response(
+                'Sorry, yor reply could not be saved at this time.', Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         }
-        return back()
-            ->with('flash', 'Your reply has been left.');
     }
 
     /**
      * @param Reply $reply
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      * @throws \Exception
      */
     public function update(Reply $reply)
     {
-        $this->authorize('update', $reply);
-        $this->validateReply();
-        $reply->update([
-            'body' => request('body'),
-        ]);
+        try {
+            $this->authorize('update', $reply);
+            $this->validateReply();
+            $reply->update([
+                'body' => request('body'),
+            ]);
+        } catch (\Exception $ex) {
+            return response(
+                'Sorry, yor reply could not be saved at this time.', Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+        return response('Your reply has been updated', Response::HTTP_OK);
     }
 
-    public function destroy(Reply $reply )
+    public function destroy(Reply $reply)
     {
 //        if($reply->user_id != auth()->id()) {
 //            return response([], Response::HTTP_FORBIDDEN);
@@ -65,7 +75,7 @@ class RepliesController extends Controller
 
         $this->authorize('update', $reply);
         $reply->delete();
-        if(request()->expectsJson()) {
+        if (request()->expectsJson()) {
             return response(['status' => 'Reply deleted']);
         }
         return back();
@@ -78,7 +88,7 @@ class RepliesController extends Controller
     {
         $this->validate(request(), [
             'body' => 'required'
-        ] );
+        ]);
         resolve(Spam::class)->detect(request('body'));
     }
 }

@@ -28,14 +28,12 @@
             addReply() {
                 axios.post(location.pathname + '/replies', {body: this.body})
                     .then(response => {
-                        console.log('success');
                         this.body = '';
                         flash('Your reply has been posted.');
                         this.$emit('created', response.data);
                     })
-                    .catch(function (res) {
-                        console.log('failed');
-                        console.log(res);
+                    .catch(function (errors) {
+                        flash(errors.response.data, 'danger');
                     });
             }
         },

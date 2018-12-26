@@ -64486,6 +64486,7 @@ var render = function() {
               _c(
                 "a",
                 {
+                  staticClass: "page-link",
                   attrs: { href: "#", "aria-label": "Previous" },
                   on: {
                     click: function($event) {
@@ -64520,6 +64521,7 @@ var render = function() {
               _c(
                 "a",
                 {
+                  staticClass: "page-link",
                   attrs: { href: "#", "aria-label": "Next" },
                   on: {
                     click: function($event) {
@@ -64529,9 +64531,14 @@ var render = function() {
                   }
                 },
                 [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("Next  »")
-                  ])
+                  _c(
+                    "span",
+                    {
+                      staticClass: "page-item",
+                      attrs: { "aria-hidden": "true" }
+                    },
+                    [_vm._v("Next »")]
+                  )
                 ]
               )
             ]

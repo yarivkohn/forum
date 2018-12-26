@@ -25,7 +25,7 @@ class InvalidKeywords implements SpamDetectionInterface
     {
         foreach ($this->invalidKeyWords as $keyWord) {
             if (stripos($body, $keyWord) !== false) {
-                throw new SpamDetectedException('Spam alert');
+                throw new \Exception('Spam alert');
             }
         }
     }

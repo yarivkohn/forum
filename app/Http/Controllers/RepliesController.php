@@ -7,6 +7,7 @@ use App\Reply;
 use App\Inspections\Spam;
 use App\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 class RepliesController extends Controller
@@ -32,7 +33,7 @@ class RepliesController extends Controller
     {
         try {
             $this->validate(request(), [
-                'body' => 'required | spamfree'
+                'body' => 'required|spamfree'
             ]);
             $reply = $thread->addReply([
                     'body' => request('body'),
@@ -57,12 +58,12 @@ class RepliesController extends Controller
         try {
             $this->authorize('update', $reply);
             $this->validate(request(), [
-                'body' => 'required | spamfree'
+                'body' => 'required|spamfree'
             ]);
             $reply->update([
                 'body' => request('body'),
             ]);
-        } catch (\Exception $ex) {
+        } catch (ValidationException $ex) {
             return response(
                 'Sorry, yor reply could not be saved at this time.', Response::HTTP_UNPROCESSABLE_ENTITY
             );

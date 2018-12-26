@@ -11,17 +11,16 @@ namespace App\Inspections;
 class KeyHeldDown implements SpamDetectionInterface
 {
 
-    protected $invalidKeyWords = [
-        'yahoo customer support',
-    ];
-
-
+    /**
+     * @param $body
+     * @return bool
+     * @throws \Exception
+     */
     public function detect($body)
     {
         if(preg_match('/(.)\\1{4,}/', $body)) {
-            throw new SpamDetectedException('Spam alert');
+            throw new \Exception('Spam alert');
         }
         return false;
-
     }
 }

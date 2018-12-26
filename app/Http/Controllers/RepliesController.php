@@ -22,23 +22,20 @@ class RepliesController extends Controller
         return $thread->replies()->paginate(20);
     }
 
-    public function store($channelId, Thread $thread, Spam $spam)
+    /**
+     * @param $channelId
+     * @param Thread $thread
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
+    public function store($channelId, Thread $thread)
     {
-        $this->validate(request(), [
-            'body' => 'required'
-        ] );
+        $this->validateReply();
         $reply = $thread->addReply([
                 'body' => request('body'),
                 'user_id' => auth()->id()
             ]
         );
-
-        $spam->detect(request('body'));
-
-//        if(stripos(request('body'), 'Yahoo Customer support') !== false ) {
-//            throw new \Exception('Spam alert');
-//        }
-
         if(request()->expectsJson()){
             return $reply->load('owner');
         }
@@ -46,9 +43,15 @@ class RepliesController extends Controller
             ->with('flash', 'Your reply has been left.');
     }
 
+    /**
+     * @param Reply $reply
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
+     */
     public function update(Reply $reply)
     {
         $this->authorize('update', $reply);
+        $this->validateReply();
         $reply->update([
             'body' => request('body'),
         ]);
@@ -66,5 +69,16 @@ class RepliesController extends Controller
             return response(['status' => 'Reply deleted']);
         }
         return back();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function validateReply()
+    {
+        $this->validate(request(), [
+            'body' => 'required'
+        ] );
+        resolve(Spam::class)->detect(request('body'));
     }
 }

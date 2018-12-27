@@ -43,8 +43,8 @@ class RepliesController extends Controller
 //                'You are posting too frequently. Please take a break :)', Response::HTTP_UNPROCESSABLE_ENTITY
 //            );
 //        }
-
-            $this->authorize('create', new Reply);
+//          This now happens within CreatPostForm
+//            $this->authorize('create', new Reply);
             return $thread->addReply([
                     'body' => request('body'),
                     'user_id' => auth()->id()
@@ -66,7 +66,6 @@ class RepliesController extends Controller
      */
     public function update(Reply $reply)
     {
-        try {
             $this->authorize('update', $reply);
             $this->validate(request(), [
                 'body' => 'required|spamfree'
@@ -74,11 +73,6 @@ class RepliesController extends Controller
             $reply->update([
                 'body' => request('body'),
             ]);
-        } catch (ValidationException $ex) {
-            return response(
-                'Sorry, yor reply could not be saved at this time.', Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
         return response('Your reply has been updated', Response::HTTP_OK);
     }
 

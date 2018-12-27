@@ -28,11 +28,14 @@ class NotifyMentionedUsers
      */
     public function handle(ThreadReceivedNewReply $event)
     {
-        collect($event->reply->mentionedUsers()) //Creates a collection form the given value
-            ->map(function($name){
-                return User::where('name', $name)->first(); //Will return either user or null
-            })
-            ->filter() //When calling filter w/o any arguments it will strip all null values from the given collection
+
+//        collect($event->reply->mentionedUsers()) //Creates a collection form the given value
+//            ->map(function($name){
+//                return User::where('name', $name)->first(); //Will return either user or null
+//            })
+//            ->filter() //When calling filter w/o any arguments it will strip all null values from the given collection
+        // This call to User::whereIn replaces the above lines with cleaner code and less SQL queries.
+        User::whereIn('name', $event->reply->mentionedUsers())->get()
             ->each(function($user) use($event) {
                 $user->notify(new YouWereMwntioned($event->reply));
             });

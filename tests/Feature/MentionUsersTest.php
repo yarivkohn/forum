@@ -56,4 +56,16 @@ class MentionUsersTest extends DataBaseTestCase
             'Hi <a href="/profile/Yariv">@Yariv</a>. look at this one.',
             $reply->body);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_fetch_all_mentioned_users_starting_with_given_characters()
+    {
+        create('App\User', ['name' => 'Johndoe']);
+        create('App\User', ['name' => 'Johndoe2']);
+        create('App\User', ['name' => 'Janedoe']);
+        $results = $this->json('GET', 'api/users', ['name' => 'john']);
+        $this->assertCount(2, $results->json() );
+    }
 }

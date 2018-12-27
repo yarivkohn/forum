@@ -4,6 +4,7 @@ namespace App;
 
 use App\Notifications\ThreadWasUpdated;
 use App\Providers\ThreadHasNewReply;
+use App\Providers\ThreadReceivedNewReply;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -95,6 +96,7 @@ class Thread extends Model
 //            ->each(function ($subscription) use ($reply) {
 //                $subscription->notify($reply);
 //            });
+        event(new ThreadReceivedNewReply($reply));
         return $reply;
     }
 

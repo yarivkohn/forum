@@ -15,10 +15,10 @@ class MentionUsersTest extends DataBaseTestCase
     public function mentioned_users_in_a_reply_are_notified()
     {
         //Given I have a signed in user John doe
-        $john = create('App\User',['name' => 'JohnDoe']);
+        $john = create('App\User', ['name' => 'JohnDoe']);
         $this->signIn($john);
         // and another user Jane doe
-        $jane = create('App\User',['name' => 'JaneDoe']);
+        $jane = create('App\User', ['name' => 'JaneDoe']);
         // if we have a thread
         $thread = create('App\Thread');
         //When John replies to that thread, and mention Jane doe
@@ -28,5 +28,17 @@ class MentionUsersTest extends DataBaseTestCase
         $this->json('post', $thread->path() . '/replies', $reply->toArray());
         //Then Jane should be notified
         $this->assertCount(1, $jane->notifications);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_detect_all_mentioned_users_in_the_Body()
+    {
+        $reply= create('App\Reply', [
+            'body' => '@JaneDoe wants to talk to @JohnDoe',
+        ]);
+
+        $this->assertEquals(['JaneDoe', 'JohnDoe'], $reply->mentionedUsers());
     }
 }

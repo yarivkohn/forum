@@ -51,4 +51,11 @@ class Reply extends Model
         return $this->created_at->gt(Carbon::now()->subMinute());
     }
 
+    public function mentionedUsers()
+    {
+        // Inspect the reply body for mentioned users
+        // And the FOREACH mentioned user - notify them.
+        preg_match_all( '/\@([^\s\.]+)/', $this->body, $matches);
+        return $matches[1];
+    }
 }

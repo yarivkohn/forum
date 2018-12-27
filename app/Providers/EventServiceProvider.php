@@ -18,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
         ThreadHasNewReply::class => [
             'App\Listeners\NotifyThreadSubscribers',
         ],
+        ThreadReceivedNewReply::class => [
+            'App\Listeners\NotifyMentionedUsers'
+        ]
     ];
 
     /**

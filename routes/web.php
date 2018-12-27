@@ -39,6 +39,7 @@ Route::patch('/replies/{reply}', 'RepliesController@update');
 //Route::middleware('throttle:1')->post('/threads/{channel}/{thread}/replies', 'RepliesController@store'); // We have replaced this throttle protection with policy protection
 Route::post('/threads/{channel}/{thread}/replies', 'RepliesController@store');
 
+Route::get('api/users', 'Api\UsersController@index');
 
 
 

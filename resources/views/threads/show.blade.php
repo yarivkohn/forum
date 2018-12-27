@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('header')
+    <link rel="stylesheet" href="/css/vendor/jquery.atwho.css">
+@endsection
+
 @section('content')
     <thread-view inline-template initial-replies-count="{{ $thread->replies_count }}">
         <div class="container-fluid">
@@ -24,7 +28,7 @@
                             <div class="body">{{ $thread->body }}</div>
                         </div>
                     </div>
-                    <replies  @removed="--repliesCount" @added="++repliesCount"></replies>
+                    <replies @removed="--repliesCount" @added="++repliesCount"></replies>
                 </div>
                 <div class="col-md-3">
                     <div class="card">
@@ -32,10 +36,13 @@
                             <p>
                                 This thread was published {{ $thread->created_at->diffForHumans() }} by
                                 <a href="#"> {{ $thread->creator->name }}</a>, and currently
-                                has <span v-text="repliesCount"></span> {{ str_plural('comment', $thread->replies_count) }}.
+                                has <span
+                                        v-text="repliesCount"></span> {{ str_plural('comment', $thread->replies_count) }}
+                                .
                             </p>
                             <p>
-                                <subscribe-button :active="{{ json_encode($thread->isSubscribedTo) }}"> </subscribe-button>
+                                <subscribe-button
+                                        :active="{{ json_encode($thread->isSubscribedTo) }}"></subscribe-button>
                             </p>
                         </div>
                     </div>

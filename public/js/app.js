@@ -65364,25 +65364,9 @@ var render = function() {
             _c("form", { on: { submit: _vm.update } }, [
               _c("div", { staticClass: "form-group" }, [
                 _c("textarea", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.body,
-                      expression: "body"
-                    }
-                  ],
                   staticClass: "form-control",
                   attrs: { required: "" },
-                  domProps: { value: _vm.body },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.body = $event.target.value
-                    }
-                  }
+                  domProps: { innerHTML: _vm._s(_vm.body) }
                 }),
                 _vm._v(" "),
                 _c("button", { staticClass: "btn btn-sm btn-primary" }, [
@@ -65403,7 +65387,7 @@ var render = function() {
           ])
         : _c("div", {
             staticClass: "body",
-            domProps: { textContent: _vm._s(_vm.body) }
+            domProps: { innerHTML: _vm._s(_vm.body) }
           })
     ]),
     _vm._v(" "),

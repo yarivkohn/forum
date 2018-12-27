@@ -55,7 +55,12 @@ class Reply extends Model
     {
         // Inspect the reply body for mentioned users
         // And the FOREACH mentioned user - notify them.
-        preg_match_all( '/\@([^\s\.]+)/', $this->body, $matches);
+        preg_match_all( '/\@([\w\-]+)/', $this->body, $matches);
         return $matches[1];
+    }
+
+    public function setBodyAttribute($body)
+    {
+        $this->attributes['body'] = preg_replace('/\@([\w\-]+)/', '<a href="/profile/$1">$0</a>', $body);
     }
 }

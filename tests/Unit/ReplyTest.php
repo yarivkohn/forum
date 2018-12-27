@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Reply;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -30,4 +31,5 @@ class ReplyTest extends TestCase
         $reply->created_at = Carbon::now()->subMOnth();
         $this->assertFalse($reply->wasJustPublished());
     }
+
 }

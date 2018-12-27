@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Reply;
 use Tests\DataBaseTestCase;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -33,12 +34,26 @@ class MentionUsersTest extends DataBaseTestCase
     /**
      * @test
      */
-    public function it_can_detect_all_mentioned_users_in_the_Body()
+    public function it_can_detect_all_mentioned_users_in_the_body()
     {
-        $reply= create('App\Reply', [
+        $reply= new Reply([
             'body' => '@JaneDoe wants to talk to @JohnDoe',
         ]);
 
         $this->assertEquals(['JaneDoe', 'JohnDoe'], $reply->mentionedUsers());
+    }
+
+    /**
+     * @test
+     */
+    public function it_wraps_mentioned_usernames_in_the_reply_body_within_anchor_tags()
+    {
+        $reply = new Reply([
+            'body' => 'Hi @Yariv. look at this one.'
+        ]);
+
+        $this->assertEquals(
+            'Hi <a href="/profile/Yariv">@Yariv</a>. look at this one.',
+            $reply->body);
     }
 }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Channel;
 use App\Http\Form\CreatePostForm;
+use App\Notifications\YouWereMwntioned;
 use App\Reply;
 use App\Inspections\Spam;
 use App\Thread;
+use App\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -43,11 +45,22 @@ class RepliesController extends Controller
 //        }
 
             $this->authorize('create', new Reply);
-            return $thread->addReply([
+            $reply = $thread->addReply([
                     'body' => request('body'),
                     'user_id' => auth()->id()
                 ]
-            )->load('owner');
+            );
+            // Inspect the reply body for mentioned users
+            // And the FOREACH mentioned user - notify them.
+            preg_match_all( '/\@([^\s\.]+)/', $reply->body, $matches);
+            $mentionedNames = $matches[1];
+            foreach($mentionedNames as $name){
+                $user = User::where('name', $name)->first();
+                if($user) {
+                    $user->notify(new  YouWereMwntioned($reply));
+                }
+            }
+            return $reply->load('owner');
 
 // This catch block was replace with the Gate facade within this function
 //        }

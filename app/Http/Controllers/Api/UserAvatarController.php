@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserAvatarController extends Controller
 {
@@ -21,7 +22,6 @@ class UserAvatarController extends Controller
         auth()->user()->update([
             'avatar_path' => request()->file('avatar')->store('avatars', 'public'),
         ]);
-
-        return back();
+        return response([], Response::HTTP_NO_CONTENT);
     }
 }

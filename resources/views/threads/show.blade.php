@@ -12,7 +12,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="level">
-                                <img src="/storage/{{($thread->creator->avatar()) }}" width="25" height="25" class="mr-2"
+                                <img src="{{ asset($thread->creator->avatar()) }}" width="25" height="25" class="mr-2"
                                      alt="{{ $thread->creator->name }}">
                                 <span class="flex">
                             <a href="/profile/{{ $thread->creator->name }}">{{ $thread->creator->name }}</a> posted: {{ $thread->title }}

@@ -11,12 +11,13 @@
                 <div class="card">
                     <div class="card-header">Trending threads</div>
                     <div class="card-body">
-                        <ol>
-                            <li>Polina</li>
-                            <li>Ella</li>
-                            <li>Yariv</li>
-                            <li>Evyatar</li>
-                        </ol>
+                        <ul class="list-group">
+                            @foreach($trending as $thread)
+                                <li class="list-group-item">
+                                    <a href="{{ $thread->path }}">{{ $thread->title }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
             </div>

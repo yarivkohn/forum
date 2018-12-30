@@ -28,11 +28,7 @@ class ThreadsController extends Controller
     public function index(Channel $channel, ThreadFilter $filter)
     {
         $threads = $this->getThreads($channel, $filter);
-        $trending = Redis::zrevrange('trending_threads', 0 , -1)->map(
-            function($thread) {
-                return json_decode($thread);
-            }
-        );
+        $trending = array_map('json_decode', Redis::zrevrange('trending_threads', 0 , 4));
         if (request()->wantsJson()) {
             return $threads;
         }

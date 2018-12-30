@@ -87,7 +87,7 @@ class ThreadsController extends Controller
             auth()->user()->read($thread);
         }
         $trending->push($thread);
-        $thread->visits()->record();
+        $thread->increment('visits');
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(20),

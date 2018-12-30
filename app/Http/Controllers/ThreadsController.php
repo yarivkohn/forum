@@ -21,6 +21,8 @@ class ThreadsController extends Controller
      * Display a listing of the resource.
      *
      * @param Channel $channel
+     * @param ThreadFilter $filter
+     * @param Trending $trending
      * @return \Illuminate\Http\Response
      */
     public function index(Channel $channel, ThreadFilter $filter, Trending $trending)
@@ -85,6 +87,7 @@ class ThreadsController extends Controller
             auth()->user()->read($thread);
         }
         $trending->push($thread);
+        $thread->recordVisits();
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(20),

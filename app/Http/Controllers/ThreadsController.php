@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Filters\ThreadFilter;
 use App\Channel;
-use App\Inspections\Spam;
 use App\Thread;
-use Carbon\Carbon;
+use App\Trending;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response;
 
 class ThreadsController extends Controller
@@ -25,14 +23,16 @@ class ThreadsController extends Controller
      * @param Channel $channel
      * @return \Illuminate\Http\Response
      */
-    public function index(Channel $channel, ThreadFilter $filter)
+    public function index(Channel $channel, ThreadFilter $filter, Trending $trending)
     {
         $threads = $this->getThreads($channel, $filter);
-        $trending = array_map('json_decode', Redis::zrevrange('trending_threads', 0 , 4));
         if (request()->wantsJson()) {
             return $threads;
         }
-        return view('threads.index', compact('threads', 'trending')); //->with(['threads' => $threads]);
+        return view('threads.index', [
+            'threads' => $threads,
+            'trending' => $trending->get()
+        ]); //->with(['threads' => $threads]);
     }
 
     /**
@@ -73,20 +73,18 @@ class ThreadsController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param $channelId
      * @param  \App\Thread $thread
+     * @param Trending $trending
      * @return \Illuminate\Http\Response
-     * @throws \Exception
      */
-    public function show($channelId, Thread $thread)
+    public function show($channelId, Thread $thread, Trending $trending)
     {
         //Record that the subscriber has visited this link
         if(auth()->check()){
             auth()->user()->read($thread);
         }
-        Redis::zincrby('trending_threads', 1, json_encode([
-            'title' => $thread->title,
-            'path' => $thread->path()
-        ]));
+        $trending->push($thread);
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(20),

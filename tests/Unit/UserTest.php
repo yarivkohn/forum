@@ -26,7 +26,7 @@ class UserTest extends DataBaseTestCase
     {
         $user = create('App\User');
         // If user does not have avatar return default image
-        $this->assertEquals('avatars/default.jpg', $user->avatar());
+        $this->assertEquals('images/default.png', $user->avatar());
         $user->avatar_path =  'avatars/me.jpg';
         $this->assertEquals('avatars/me.jpg', $user->avatar());
     }

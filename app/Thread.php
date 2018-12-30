@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
 {
-    use RecordActivity, RecordVisits;
+    use RecordActivity;
 
     protected $guarded = [];
 
@@ -145,6 +145,11 @@ class Thread extends Model
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    public function visits()
+    {
+        return new Visits($this);
     }
 
     /**

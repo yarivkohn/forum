@@ -30,7 +30,7 @@ Route::get('/profile/{user}', "ProfilesController@show")->name('profile');
 Route::delete('/profile/{user}/notifications/{notification}', "UserNotificationsController@destroy");
 Route::get('/profile/{user}/notifications/', "UserNotificationsController@index");
 
-Route::post('/threads/', 'ThreadsController@store');
+Route::post('/threads/', 'ThreadsController@store')->middleware('must-be-confirmed');
 Route::post('/replies/{reply}/favorites', 'FavoritesController@store');
 Route::delete('/replies/{reply}/favorites', 'FavoritesController@destroy');
 Route::delete('/replies/{reply}', 'RepliesController@destroy');

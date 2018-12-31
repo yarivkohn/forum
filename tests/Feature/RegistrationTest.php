@@ -28,19 +28,30 @@ class RegistrationTest extends DataBaseTestCase
      */
     public function users_can_fully_confirm_their_email_address()
     {
-       $this->post(route('register'), [
-           'name' => 'TestUser',
-           'email' => 'tets.user@test.env.com',
-           'password' => 'foobar_password',
-           'password_confirmation' => 'foobar_password',
-       ]);
+        Mail::fake();
+        $this->post(route('register'), [
+            'name' => 'TestUser',
+            'email' => 'tets.user@test.env.com',
+            'password' => 'foobar_password',
+            'password_confirmation' => 'foobar_password',
+        ]);
 
-       $user = User::where('name', 'TestUser')->first();
-       $this->assertFalse($user->confirmed);
-       $this->assertNotNull($user->confirmation_token);
+        $user = User::where('name', 'TestUser')->first();
+        $this->assertFalse($user->confirmed);
+        $this->assertNotNull($user->confirmation_token);
 
-       $response = $this->get(route('register.confirm', ['token' => $user->confirmation_token]));
-       $this->assertTrue($user->fresh()->confirmed);
-       $response->assertRedirect(route('threads'));
+        $response = $this->get(route('register.confirm', ['token' => $user->confirmation_token]));
+        $response->assertRedirect(route('threads'));
+        $this->assertTrue($user->fresh()->confirmed);
+    }
+
+    /**
+     * @test
+     */
+    public function can_handle_confirming_invalid_token()
+    {
+        $response = $this->get(route('register.confirm', ['token' => 'InvalidToken']))
+            ->assertRedirect(route('threads'))
+            ->assertSessionHas('flash', 'Unknown token.');
     }
 }

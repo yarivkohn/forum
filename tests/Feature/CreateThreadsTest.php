@@ -20,20 +20,23 @@ class CreateThreadsTest extends DataBaseTestCase
         $this->withExceptionHandling();
 
         $this->get("/threads/create")
-            ->assertRedirect('/login');
+            ->assertRedirect(route('login'));
 
-        $this->post('/threads')
-            ->assertRedirect('/login');
+        $this->post(route('threads'))
+            ->assertRedirect(route('login'));
     }
 
     /**
      * @test
      */
-    public function authenticated_users_must_first_confirm_their_email_address_before_creating_thread()
+    public function new_users_must_first_confirm_their_email_address_before_creating_thread()
     {
-        $this->publishThread()
-            ->assertRedirect('/threads')
-        ->assertSessionHas('flash');
+        $user = factory('App\User')->state('unconfirmed')->create();
+        $this->withExceptionHandling()->signIn($user);
+        $thread = make('App\Thread');
+        return $this->post(route('threads'), $thread->toArray())
+            ->assertRedirect(route('threads'))
+            ->assertSessionHas('flash');
     }
 
 
@@ -42,14 +45,15 @@ class CreateThreadsTest extends DataBaseTestCase
      */
     public function an_authenticated_user_can_create_new_form_threads()
     {
-        $this->actingAs(factory('App\User')->create());
+//        $this->actingAs(factory('App\User')->create(['confirmed' => true]));
+        $this->signIn();
         $thread = make('App\Thread');
 
-        $response = $this->post('/threads/', $thread->toArray());
+        $response = $this->post(route('threads'), $thread->toArray());
 
         $this->get($response->headers->get('Location'))
-                ->assertSee($thread->title)
-                ->assertSee($thread->body);
+            ->assertSee($thread->title)
+            ->assertSee($thread->body);
     }
 
 //    /**
@@ -82,7 +86,7 @@ class CreateThreadsTest extends DataBaseTestCase
             'body' => null,
             'channel_id' => null,
         ];
-        foreach($assertions as $candidate => $value){
+        foreach ($assertions as $candidate => $value) {
             $this->publishThread([$candidate => $value])
                 ->assertSessionHasErrors($candidate);
         }
@@ -94,7 +98,7 @@ class CreateThreadsTest extends DataBaseTestCase
      */
     public function a_thread_require_a_valid_channel()
     {
-        factory('App\Channel',2)->create();
+        factory('App\Channel', 2)->create();
         $this->publishThread(['channel_id' => 999])
             ->assertSessionHasErrors('channel_id');
     }
@@ -107,7 +111,7 @@ class CreateThreadsTest extends DataBaseTestCase
     {
         $this->withExceptionHandling()->signIn();
         $thread = make('App\Thread', $overrides);
-        return $this->post('/threads', $thread->toArray());
+        return $this->post(route('threads'), $thread->toArray());
     }
 
     /**
@@ -138,7 +142,7 @@ class CreateThreadsTest extends DataBaseTestCase
         $thread = create('App\Thread', ['user_id' => auth()->id()]);
         $reply = create('App\Reply', ['thread_id' => $thread->id]);
 
-        $response  = $this->json('DELETE', $thread->path());
+        $response = $this->json('DELETE', $thread->path());
         $response->assertStatus(Response::HTTP_FOUND);
 
         $this->assertDatabaseMissing('threads', ['id' => $thread->id]);

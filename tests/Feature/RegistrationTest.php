@@ -20,7 +20,7 @@ class RegistrationTest extends DataBaseTestCase
     {
         Mail::fake();
         event(new Registered(create('App\User')));
-        Mail::assertSent(PleaseConfirmYourEmail::class);
+        Mail::assertQueued(PleaseConfirmYourEmail::class);
     }
 
     /**
@@ -28,7 +28,7 @@ class RegistrationTest extends DataBaseTestCase
      */
     public function users_can_fully_confirm_their_email_address()
     {
-       $this->post('/register', [
+       $this->post(route('register'), [
            'name' => 'TestUser',
            'email' => 'tets.user@test.env.com',
            'password' => 'foobar_password',
@@ -39,8 +39,8 @@ class RegistrationTest extends DataBaseTestCase
        $this->assertFalse($user->confirmed);
        $this->assertNotNull($user->confirmation_token);
 
-       $response = $this->get('/register/confirm?token='. $user->confirmation_token);
+       $response = $this->get(route('register.confirm', ['token' => $user->confirmation_token]));
        $this->assertTrue($user->fresh()->confirmed);
-       $response->assertRedirect('/threads');
+       $response->assertRedirect(route('threads'));
     }
 }

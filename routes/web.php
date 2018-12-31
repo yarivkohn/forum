@@ -18,7 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/threads', 'ThreadsController@index');
+Route::get('/threads', 'ThreadsController@index')->name('threads');
 Route::get('/threads/create', 'ThreadsController@create');
 Route::get('/threads/{channel}', 'ThreadsController@index');
 Route::get('/threads/{channel}/{thread}', 'ThreadsController@show');
@@ -42,7 +42,7 @@ Route::post('/threads/{channel}/{thread}/replies', 'RepliesController@store');
 Route::get('api/users', 'Api\UsersController@index');
 Route::post('api/users/{user}/avatar', 'Api\UserAvatarController@store')->middleware('auth')->name('avatar');
 
-Route::get('register/confirm', 'Auth\RegisterConfirmationController@index');
+Route::get('register/confirm', 'Auth\RegisterConfirmationController@index')->name('register.confirm');
 
 //Route::resource('threads/{channel}/','ThreadsController');
 

@@ -11,16 +11,13 @@ class RegisterConfirmationController extends Controller
 {
     public function index()
     {
-        try {
-            $user = User::where('confirmation_token', request('token'))
-                ->where('confirmed', false)
-                ->firstOrFail();
-            $user->confirm();
-        } catch (ModelNotFoundException $ex) {
+        $user = User::where('confirmation_token', request('token'))->first();
+//        $flashMessage = 'Unknown token.'; // Every request is guilty unless proven otherwise.
+        if (!$user) {
             return redirect(route('threads'))
-                ->with('flash', 'Unknown token. Is it possible that you have already confirmed you account?');
+                ->with('flash', 'Unknown token.');
         }
-
+        $user->confirm();
         auth()->login($user);
         return redirect(route('threads'))
             ->with('flash', 'Your account is now confirmed.');

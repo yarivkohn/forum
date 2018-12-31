@@ -4,24 +4,24 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                @forelse($threads as $thread)
+                @include('threads._list')
+                {{ $threads->render() }}
+            </div>
+            <div class="col-md-4">
+                @if($trending)
                     <div class="card">
-                        <div class="card-header">
-                            <div class="level">
-                                <h4 class="flex">
-                                    <a href="{{ $thread->path() }}">{{$thread->title}}</a>
-                                </h4>
-                                <a href="{{ $thread->path() }}">{{ $thread->replies_count }} {{ str_plural('reply', $thread->replies_count) }}</a>
-                            </div>
-                        </div>
-
+                        <div class="card-header">Trending threads</div>
                         <div class="card-body">
-                                <div class="body">{{$thread->body}}</div>
+                            <ul class="list-group">
+                                @foreach($trending as $thread)
+                                    <li class="list-group-item">
+                                        <a href="{{ $thread->path }}">{{ $thread->title }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
-                    @empty
-                        <p>There are no relevant results as this time</p>
-                @endforelse
+                @endif
             </div>
         </div>
     </div>

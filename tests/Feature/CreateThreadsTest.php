@@ -26,6 +26,16 @@ class CreateThreadsTest extends DataBaseTestCase
             ->assertRedirect('/login');
     }
 
+    /**
+     * @test
+     */
+    public function authenticated_users_must_first_confirm_their_email_address_before_creating_thread()
+    {
+        $this->publishThread()
+            ->assertRedirect('/threads')
+        ->assertSessionHas('flash');
+    }
+
 
     /**
      * @test

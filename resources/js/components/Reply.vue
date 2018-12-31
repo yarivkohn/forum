@@ -13,14 +13,15 @@
         </div>
         <div class="card-body">
             <div v-if="editing">
-                <div class="form-group">
-                    <textarea class="form-control" v-model="body"></textarea>
-                    <button class="btn btn-sm btn-primary" @click="update">Update</button>
-                    <button class="btn btn-sm btn-link" @click="editing=false">Cancel</button>
-                </div>
-
+                <form @submit="update">
+                    <div class="form-group">
+                        <textarea class="form-control" v-html="body" required></textarea>
+                        <button class="btn btn-sm btn-primary">Update</button>
+                        <button class="btn btn-sm btn-link" type="button" @click="cancel">Cancel</button>
+                    </div>
+                </form>
             </div>
-            <div v-else class="body" v-text="body"></div>
+            <div v-else class="body" v-html="body"></div>
         </div>
 
         <div class="card-footer level" v-if="canUpdate">
@@ -40,16 +41,24 @@
             return {
                 editing: false,
                 id: this.data.id,
-                body: this.data.body
+                body: this.data.body,
+                originalBody: this.data.body
             }
         },
         methods: {
             update() {
                 axios.patch('/replies/' + this.data.id, {
                     body: this.body
+                }).then(response => {
+                    flash('Updated!');
+                    this.editing = false;
+                }).catch(error => {
+                    flash(error.response.data, 'danger');
                 });
-                this.editing = false;
-                flash('Updated!');
+            },
+            cancel() {
+                this.editing=false;
+                this.body = this.originalBody;
             },
             destroy() {
                 axios.delete('/replies/' + this.data.id);
@@ -57,7 +66,7 @@
             }
 
         },
-        computed :{
+        computed: {
             ago() {
                 return moment(this.data.created_at).fromNow() + '...';
             },

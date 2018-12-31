@@ -44,6 +44,6 @@ if (token) {
  * allows your team to easily build robust real-time web applications.
  */
 
-window.flash = function(message) {
-    window.events.$emit('flash', message);
+window.flash = function(message, level= 'success') {
+    window.events.$emit('flash', { message, level });
 };

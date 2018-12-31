@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\ThreadFilter;
 use App\Channel;
 use App\Thread;
+use App\Trending;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,16 +21,20 @@ class ThreadsController extends Controller
      * Display a listing of the resource.
      *
      * @param Channel $channel
+     * @param ThreadFilter $filter
+     * @param Trending $trending
      * @return \Illuminate\Http\Response
      */
-    public function index(Channel $channel, ThreadFilter $filter)
+    public function index(Channel $channel, ThreadFilter $filter, Trending $trending)
     {
         $threads = $this->getThreads($channel, $filter);
-
         if (request()->wantsJson()) {
             return $threads;
         }
-        return view('threads.index')->with(['threads' => $threads]);
+        return view('threads.index', [
+            'threads' => $threads,
+            'trending' => $trending->get()
+        ]); //->with(['threads' => $threads]);
     }
 
     /**
@@ -52,8 +57,8 @@ class ThreadsController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'title' => 'required',
-            'body' => 'required',
+            'title' => 'required | spamfree',
+            'body' => 'required | spamfree',
             'channel_id' => 'required|exists:channels,id',
         ]);
 
@@ -70,11 +75,19 @@ class ThreadsController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param $channelId
      * @param  \App\Thread $thread
+     * @param Trending $trending
      * @return \Illuminate\Http\Response
      */
-    public function show($channelId, Thread $thread)
+    public function show($channelId, Thread $thread, Trending $trending)
     {
+        //Record that the subscriber has visited this link
+        if(auth()->check()){
+            auth()->user()->read($thread);
+        }
+        $trending->push($thread);
+        $thread->increment('visits');
         return view('threads.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(20),
@@ -143,6 +156,6 @@ class ThreadsController extends Controller
         if ($channel->exists) {
             $threads->where('channel_id', $channel->id);
         }
-        return $threads->get();
+        return $threads->paginate(5);
     }
 }

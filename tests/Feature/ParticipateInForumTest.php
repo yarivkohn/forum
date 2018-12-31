@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\ProfilesController;
+use App\Inspections\SpamDetectedException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -24,7 +25,7 @@ class ParticipateInForumTest extends TestCase
     /**
      * @test
      */
-    public function  an_authenticated_user_may_participate_in_forum_threads()
+    public function an_authenticated_user_may_participate_in_forum_threads()
     {
         //Given we have an authenticated user
         $this->signIn($user = factory('App\User')->create());
@@ -33,7 +34,7 @@ class ParticipateInForumTest extends TestCase
         $thread = factory('App\Thread')->create();
         //When a user adds a reply to the threads
         $reply = factory('App\Reply')->make();
-        $this->post($thread->path().'/replies', $reply->toArray());
+        $this->post($thread->path() . '/replies', $reply->toArray());
 
         $this->assertDatabaseHas('replies', ['body' => $reply->body]);
         $this->assertEquals(1, $thread->fresh()->replies_count);
@@ -47,9 +48,9 @@ class ParticipateInForumTest extends TestCase
     {
         $this->withExceptionHandling()->signIn();
         $thread = create('App\Thread');
-        $reply = make('App\Reply',['body' => null]);
-        $this->post($thread->path().'/replies', $reply->toArray())
-            ->assertSessionHasErrors('body');
+        $reply = make('App\Reply', ['body' => null]);
+        $this->postJson($thread->path() . '/replies', $reply->toArray())
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     /**
@@ -80,7 +81,7 @@ class ParticipateInForumTest extends TestCase
             ->assertStatus(Response::HTTP_FOUND);
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
         $this->assertEquals(0, $reply->thread->fresh()->replies_count);
-     }
+    }
 
 
     /**
@@ -111,5 +112,44 @@ class ParticipateInForumTest extends TestCase
         $reply = create('App\Reply', ['user_id' => auth()->id()]);
         $this->patch("/replies/{$reply->id}", ['body' => $updateBodyText]);
         $this->assertDatabaseHas('replies', ['id' => $reply->id, 'body' => $updateBodyText]);
+    }
+
+    /**
+     * @test
+     */
+    public function reply_that_contain_spam_may_not_be_created()
+    {
+        $this->withExceptionHandling();
+        //Given we have an authenticated user
+        $this->signIn($user = factory('App\User')->create());
+        // And an existing Thread
+
+        $thread = factory('App\Thread')->create();
+        //When a user adds a reply which contain spam to the threads
+
+        $reply = make('App\Reply', [
+            'body' => 'Yahoo Customer Support'
+        ]);
+        $this->json('post', $thread->path() . '/replies', $reply->toArray())
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    /**
+     * @test
+     */
+    public function users_may_only_reply_a_maximum_of_one_per_minute()
+    {
+        $this->withExceptionHandling();
+        $this->signIn();
+        $thread = create('App\Thread');
+        $reply = make('App\Reply', [
+            'body' => 'This is not a SPAM'
+        ]);
+
+        $this->post($thread->path(). '/replies', $reply->toArray())
+        ->assertStatus(Response::HTTP_CREATED);
+
+        $this->post($thread->path(). '/replies', $reply->toArray())
+            ->assertStatus(Response::HTTP_TOO_MANY_REQUESTS);
     }
 }

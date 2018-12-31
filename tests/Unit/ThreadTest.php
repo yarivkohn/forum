@@ -2,7 +2,9 @@
 
 namespace Tests\Unit;
 
+use App\Notifications\ThreadWasUpdated;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class ThreadTest extends TestCase
@@ -56,6 +58,22 @@ class ThreadTest extends TestCase
             'user_id' => 1
         ]);
         $this->assertCount(1, $this->thread->replies );
+    }
+
+    /**
+     * @test
+     */
+    public function a_thread_notify_all_registered_subscribers_when_a_reply_is_added()
+    {
+        Notification::fake( );
+        $this->signIn();
+        $this->thread->subscribe()
+        ->addReply([
+            'body' =>'FooBar',
+            'user_id' => 1
+        ]);
+        Notification::assertSentTo(auth()->user(), ThreadWasUpdated::class);
+
     }
 
     /**
@@ -120,4 +138,35 @@ class ThreadTest extends TestCase
         $this->assertTrue($thread->isSubscribedTo);
 
     }
+
+    /**
+     * @test
+     */
+    public function a_thread_can_check_if_subscriber_has_read_all_replies()
+    {
+        $this->signIn();
+        $thread = create('App\Thread');
+        tap(auth()->user(), function($user) use($thread){
+            $this->assertTrue($thread->hasUpdatesFor($user));
+            $user->read($thread);
+            $this->assertFalse($thread->hasUpdatesFor($user));
+        });
+
+    }
+
+//    /**
+//     * @test
+//     */
+//    public function a_thread_records_each_visit()
+//    {
+//        $thread = make('App\Thread', ['id' => 1]);
+//        $thread->visits()->reset();
+//        $this->assertSame(0, $thread->visits()->count());
+//        $thread->visits()->record();
+//        $this->assertEquals(1, $thread->visits()->count());
+//        $thread->visits()->record();
+//        $this->assertEquals(2, $thread->visits()->count());
+//    }
+
+
 }

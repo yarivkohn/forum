@@ -67,6 +67,7 @@ class ThreadsController extends Controller
             'channel_id' => $request->get('channel_id'),
             'title' => request('title'),
             'body' => $request->get('body'),
+            'slug' => str_slug(request('title'))
         ]);
         return redirect($thread->path())
             ->with('flash', 'Your thread has been published');

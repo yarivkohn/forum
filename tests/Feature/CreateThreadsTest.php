@@ -56,25 +56,6 @@ class CreateThreadsTest extends DataBaseTestCase
             ->assertSee($thread->body);
     }
 
-//    /**
-//     * @test
-//     */
-//    public function a_thread_require_a_title()
-//    {
-//        $this->publishThread(['title' => null])
-//            ->assertSessionHasErrors('title');
-//    }
-//
-//    /**
-//     * @test
-//     */
-//    public function a_thread_require_a_body()
-//    {
-//        $this->publishThread(['body' => null])
-//            ->assertSessionHasErrors('body');
-//    }
-//
-
     /**
      * Test for required fields
      * @test

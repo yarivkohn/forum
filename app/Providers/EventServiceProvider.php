@@ -20,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ThreadReceivedNewReply::class => [
             'App\Listeners\NotifyMentionedUsers'
+        ],
+        Registered::class => [
+            'App\Listeners\SendEmailConfirmationRequest'
         ]
     ];
 

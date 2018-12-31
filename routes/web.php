@@ -42,7 +42,7 @@ Route::post('/threads/{channel}/{thread}/replies', 'RepliesController@store');
 Route::get('api/users', 'Api\UsersController@index');
 Route::post('api/users/{user}/avatar', 'Api\UserAvatarController@store')->middleware('auth')->name('avatar');
 
-
+Route::get('register/confirm', 'Auth\RegisterConfirmationController@index');
 
 //Route::resource('threads/{channel}/','ThreadsController');
 

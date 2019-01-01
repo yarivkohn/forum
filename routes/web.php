@@ -33,7 +33,7 @@ Route::get('/profile/{user}/notifications/', "UserNotificationsController@index"
 Route::post('/threads/', 'ThreadsController@store')->middleware('must-be-confirmed');
 Route::post('/replies/{reply}/favorites', 'FavoritesController@store');
 Route::delete('/replies/{reply}/favorites', 'FavoritesController@destroy');
-Route::delete('/replies/{reply}', 'RepliesController@destroy');
+Route::delete('/replies/{reply}', 'RepliesController@destroy')->name('replies.destroy');
 Route::patch('/replies/{reply}', 'RepliesController@update');
 
 Route::post('/replies/{reply}/best', 'BestRepliesController@store')->name('best-replies.store');

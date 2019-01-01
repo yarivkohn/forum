@@ -36,6 +36,9 @@ class RepliesController extends Controller
      */
     public function store($channelId, Thread $thread, CreatePostForm $form)
     {
+        if($thread->locked){
+            return response('Thread is locked', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 //        This Gate check was replaced with the CreateFormRequest@authorize
 
 //        if(Gate::denies('create', new Reply)) {

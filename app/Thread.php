@@ -128,6 +128,13 @@ class Thread extends Model
         return $this->hasMany(ThreadSubscriptions::class);
     }
 
+    public function lock()
+    {
+        $this->update([
+            'locked' => true,
+        ]);
+    }
+
     /**
      * Custom Eloquent attribute
      * Whenever calling $thread->isSubscribedTo, this function will fire

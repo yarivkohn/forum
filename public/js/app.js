@@ -30870,13 +30870,32 @@ __webpack_require__(142);
 
 window.Vue = __webpack_require__(164);
 
-Vue.prototype.authorized = function (handler) {
-  var user = window.App.user;
-  return user ? handler(user) : false;
-  // return handler(window.App.user);
+// Vue.prototype.authorized = function(handler) {
+//     let user = window.App.user;
+//     return user ? handler(user) : false;
+//     // return handler(window.App.user);
+// };
+
+var authorization = __webpack_require__(212);
+
+Vue.prototype.authorized = function () {
+  if (!this.signedIn) {
+    return false;
+  }
+
+  for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
+    params[_key] = arguments[_key];
+  }
+
+  if (typeof params[0] == 'string') {
+    return authorization[params[0]](params[1]);
+  }
+  return params[0](window.App.user);
 };
 
 window.events = new Vue();
+
+Vue.prototype.signedIn = window.App.signedIn;
 
 /**
  * The following block of code may be used to automatically register your
@@ -64953,7 +64972,7 @@ exports = module.exports = __webpack_require__(14)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -65000,19 +65019,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['data'],
+    props: ['reply'],
     components: { Favorite: __WEBPACK_IMPORTED_MODULE_0__Favotire___default.a },
     data: function data() {
         return {
             editing: false,
-            id: this.data.id,
-            body: this.data.body,
-            originalBody: this.data.body
+            id: this.reply.id,
+            body: this.reply.body,
+            originalBody: this.reply.body,
+            isBest: this.reply.isBest
         };
     },
 
@@ -65020,13 +65043,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         update: function update() {
             var _this = this;
 
-            axios.patch('/replies/' + this.data.id, {
+            axios.patch('/replies/' + this.reply.id, {
                 body: this.body
             }).then(function (response) {
                 flash('Updated!');
                 _this.editing = false;
             }).catch(function (error) {
-                flash(error.response.data, 'danger');
+                flash(error.response.reply, 'danger');
             });
         },
         cancel: function cancel() {
@@ -65034,28 +65057,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.body = this.originalBody;
         },
         destroy: function destroy() {
-            axios.delete('/replies/' + this.data.id);
-            this.$emit('deleted', this.data.id);
+            axios.delete('/replies/' + this.reply.id);
+            this.$emit('deleted', this.reply.id);
+        },
+        markBestReply: function markBestReply() {
+            axios.post('/replies/' + this.reply.id + '/best', { id: this.reply });
+            window.events.$emit('best-reply-selected', this.reply.id);
         }
     },
     computed: {
         ago: function ago() {
-            return __WEBPACK_IMPORTED_MODULE_1_moment___default()(this.data.created_at).fromNow() + '...';
-        },
-        signedIn: function signedIn() {
-            // var isSignedIn = document.head.querySelector('meta[name="signedIn"]');
-            // console.log(isSignedIn, 'new val');
-
-            return window.App.signedIn;
-        },
-        canUpdate: function canUpdate() {
-            var _this2 = this;
-
-            return this.authorized(function (user) {
-                return _this2.data.user_id == window.App.user.id;
-            });
-            // return this.data.user_id == window.App.user.id;
+            return __WEBPACK_IMPORTED_MODULE_1_moment___default()(this.reply.created_at).fromNow() + '...';
         }
+    },
+    created: function created() {
+        var _this2 = this;
+
+        window.events.$on('best-reply-selected', function (id) {
+            _this2.isBest = id === _this2.id;
+        });
     }
 });
 
@@ -65127,8 +65147,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['reply'],
     data: function data() {
         return {
-            count: this.reply.data.favoritesCount,
-            active: this.reply.data.isFavorited
+            count: this.reply.favoritesCount,
+            active: this.reply.isFavorited
         };
     },
 
@@ -65471,26 +65491,33 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "card", attrs: { id: "reply-" + _vm.id } }, [
-    _c("div", { staticClass: "card-header" }, [
-      _c("div", { staticClass: "level" }, [
-        _c("h5", { staticClass: "flex" }, [
-          _c("a", {
-            attrs: { href: "/profile/" + _vm.data.owner.name },
-            domProps: { textContent: _vm._s(_vm.data.owner.name) }
-          }),
-          _vm._v("\n                said "),
-          _c("span", { domProps: { textContent: _vm._s(_vm.ago) } })
-        ]),
-        _vm._v(" "),
-        _vm.signedIn
-          ? _c(
-              "div",
-              [_c("favorite", { attrs: { reply: { data: _vm.data } } })],
-              1
-            )
-          : _vm._e()
-      ])
-    ]),
+    _c(
+      "div",
+      {
+        staticClass: "card-header bg-",
+        class: _vm.isBest ? " bg-success" : ""
+      },
+      [
+        _c("div", { staticClass: "level" }, [
+          _c("h5", { staticClass: "flex" }, [
+            _c("a", {
+              attrs: { href: "/profile/" + _vm.reply.owner.name },
+              domProps: { textContent: _vm._s(_vm.reply.owner.name) }
+            }),
+            _vm._v("\n                said "),
+            _c("span", { domProps: { textContent: _vm._s(_vm.ago) } })
+          ]),
+          _vm._v(" "),
+          _vm.signedIn
+            ? _c(
+                "div",
+                [_c("favorite", { attrs: { reply: { reply: _vm.reply } } })],
+                1
+              )
+            : _vm._e()
+        ])
+      ]
+    ),
     _vm._v(" "),
     _c("div", { staticClass: "card-body" }, [
       _vm.editing
@@ -65525,29 +65552,44 @@ var render = function() {
           })
     ]),
     _vm._v(" "),
-    _vm.canUpdate
+    _vm.authorized("owns", _vm.reply) || _vm.authorized("owns", _vm.thread)
       ? _c("div", { staticClass: "card-footer level" }, [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-sm btn-info mr-1",
-              on: {
-                click: function($event) {
-                  _vm.editing = true
-                }
-              }
-            },
-            [_vm._v("Edit")]
-          ),
+          _vm.authorized("owns", _vm.reply)
+            ? _c("div", [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-info mr-1",
+                    on: {
+                      click: function($event) {
+                        _vm.editing = true
+                      }
+                    }
+                  },
+                  [_vm._v("Edit")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-danger mr-1",
+                    on: { click: _vm.destroy }
+                  },
+                  [_vm._v("Delete")]
+                )
+              ])
+            : _vm._e(),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-sm btn-danger",
-              on: { click: _vm.destroy }
-            },
-            [_vm._v("Delete")]
-          )
+          _vm.authorized("owns", _vm.reply.thread)
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-default ml-a",
+                  on: { click: _vm.markBestReply }
+                },
+                [_vm._v("Best Reply")]
+              )
+            : _vm._e()
         ])
       : _vm._e()
   ])
@@ -67466,7 +67508,7 @@ var render = function() {
           { key: reply.id },
           [
             _c("reply", {
-              attrs: { data: reply },
+              attrs: { reply: reply },
               on: {
                 deleted: function($event) {
                   _vm.remove(index)
@@ -68009,6 +68051,29 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 209 */,
+/* 210 */,
+/* 211 */,
+/* 212 */
+/***/ (function(module, exports) {
+
+var user = window.App.user;
+
+module.exports = {
+    updateReply: function updateReply(reply) {
+        return reply.owner.id === user.id;
+    },
+    updateThread: function updateThread(thread) {
+        return thread.user_id === user.id;
+    },
+    owns: function owns(model) {
+        var prop = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'user_id';
+
+        return model[prop] === user.id;
+    }
+};
 
 /***/ })
 /******/ ]);

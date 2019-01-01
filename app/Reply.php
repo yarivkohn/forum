@@ -63,4 +63,13 @@ class Reply extends Model
     {
         $this->attributes['body'] = preg_replace('/\@([\w\-]+)/', '<a href="/profile/$1">$0</a>', $body);
     }
+
+    /**
+     * Return true if this reply was marked as the best one (for a given thread)
+     * @return bool
+     */
+    public function isBest()
+    {
+        return ($this->thread->best_reply_id == $this->id);
+    }
 }

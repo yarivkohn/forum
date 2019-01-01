@@ -36,6 +36,9 @@ Route::delete('/replies/{reply}/favorites', 'FavoritesController@destroy');
 Route::delete('/replies/{reply}', 'RepliesController@destroy');
 Route::patch('/replies/{reply}', 'RepliesController@update');
 
+Route::post('/replies/{reply}/best', 'BestRepliesController@store')->name('best-replies.store');
+
+
 //Route::middleware('throttle:1')->post('/threads/{channel}/{thread}/replies', 'RepliesController@store'); // We have replaced this throttle protection with policy protection
 Route::post('/threads/{channel}/{thread}/replies', 'RepliesController@store');
 

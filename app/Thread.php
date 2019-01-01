@@ -209,4 +209,9 @@ class Thread extends Model
 //        }
 //        return "{$slug}-2";
 //    }
+    public function markBestReply($reply)
+    {
+        $this->update(['best_reply_id' => $reply->id]);
+    }
+
 }

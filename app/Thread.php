@@ -176,20 +176,38 @@ class Thread extends Model
 
     public function setSlugAttribute($value)
     {
-        if(static::whereSlug($slug = str_slug($value))->exists()){
-            $slug = $this->incrementSlug($slug);
+        $slug = str_slug($value);
+        $original = $slug;
+        $count = 2;
+        while(static::whereSlug($slug)->exists()) {
+            $slug = "{$original}-". $count++;
         }
+//        return $slug;
+
+//        if(static::whereSlug($slug)->exists()){
+//            $slug = $this->incrementSlug($slug);
+//        }
         $this->attributes['slug'] = $slug;
     }
 
-    private function incrementSlug(string $slug)
+    /**
+     * @param $slug
+     * @return string
+     */
+    private function incrementSlug($slug)
     {
-        $maxSlug = static::whereTitle($this->title)->latest('id')->value('slug');
-        if(is_numeric($maxSlug[-1])){
-         return preg_replace_callback('/(\d+)$/', function($matches){
-                return $matches[1]++;
-            }, $maxSlug);
+        $original = $slug;
+        $count = 2;
+        while(static::whereSlug($slug)->exists()) {
+            $slug = "{$original}-". $count++;
         }
-        return "{$slug}-2";
+        return $slug;
+//        $maxSlug = static::whereTitle($this->title)->latest('id')->value('slug');
+//        if(is_numeric($maxSlug[-1])){
+//         return preg_replace_callback('/(\d+)$/', function($matches){
+//                return ++$matches[1];
+//            }, $maxSlug);
+//        }
+//        return "{$slug}-2";
     }
 }

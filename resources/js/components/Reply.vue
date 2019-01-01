@@ -46,7 +46,7 @@
                 id: this.data.id,
                 body: this.data.body,
                 originalBody: this.data.body,
-                isBest: false,
+                isBest: this.data.isBest,
                 reply: this.data
             }
         },
@@ -70,7 +70,8 @@
                 this.$emit('deleted', this.data.id)
             },
             markBestReply() {
-                this.isBest = true;
+                axios.post('/replies/'+ this.reply.id +'/best', {id: this.reply});
+                window.events.$emit('best-reply-selected', this.data.id);
             }
 
         },
@@ -78,16 +79,11 @@
             ago() {
                 return moment(this.data.created_at).fromNow() + '...';
             }
-            // signedIn() {
-            //     // var isSignedIn = document.head.querySelector('meta[name="signedIn"]');
-            //     // console.log(isSignedIn, 'new val');
-            //
-            //     return window.App.signedIn;
-            // },
-            // canUpdate() {
-            //     return this.authorized(user => this.data.user_id == window.App.user.id);
-            //     // return this.data.user_id == window.App.user.id;
-            // }
+        },
+        created() {
+            window.events.$on('best-reply-selected', id => {
+                this.isBest = (id === this.id);
+            });
         }
     }
 </script>

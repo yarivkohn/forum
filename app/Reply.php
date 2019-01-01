@@ -17,7 +17,7 @@ class Reply extends Model
     // Evert time this model is cast to array/json it will auto add this attribute
     // The attribute naming convention is get_FEATURE_NAME_Attribute where in our case _FEATURE_NAME_ is FavoritesCount
     // Function getFavoritesCountAttribute is located in the favoritable trait.
-    protected $appends = ['favoritesCount', 'isFavorited'];
+    protected $appends = ['favoritesCount', 'isFavorited', 'isBest'];
 
     protected static function boot()
     {
@@ -71,5 +71,10 @@ class Reply extends Model
     public function isBest()
     {
         return ($this->thread->best_reply_id == $this->id);
+    }
+
+    public function getIsBestAttribute()
+    {
+        return $this->isBest();
     }
 }

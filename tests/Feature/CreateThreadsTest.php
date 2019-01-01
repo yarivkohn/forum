@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Activity;
+use App\Thread;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\DataBaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -82,6 +83,22 @@ class CreateThreadsTest extends DataBaseTestCase
         factory('App\Channel', 2)->create();
         $this->publishThread(['channel_id' => 999])
             ->assertSessionHasErrors('channel_id');
+    }
+
+    /**
+     * @test
+     */
+    public function a_thread_requires_a_unique_slug()
+    {
+        $this->signIn();
+
+        $thread = create('App\Thread', [
+            'title' =>'foo title',
+            'slug' => 'foo-title',
+        ]);
+        $this->assertEquals($thread->fresh()->slug, 'foo-title');
+        $this->post(route('threads'), $thread->toArray());
+        $this->assertTrue(Thread::where('slug', 'foo-title-2')->exists());
     }
 
     /**

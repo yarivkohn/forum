@@ -34,7 +34,11 @@ class Thread extends Model
                 $reply->delete();
             });
         });
-
+        static::created(function($thread){
+            $thread->update([
+                'slug' => $thread->title,
+            ]);
+        });
 // This is now being replaced with the global param $with
 //        static::addGlobalScope('creator', function($builder){
 //            $builder->with('creator');
@@ -178,36 +182,31 @@ class Thread extends Model
     {
         $slug = str_slug($value);
         $original = $slug;
-        $count = 2;
-        while(static::whereSlug($slug)->exists()) {
-            $slug = "{$original}-". $count++;
+        if (static::whereSlug($slug)->exists()) {
+            $slug .= "-{$this->id}";
+            //            $slug = $this->incrementSlug($slug);
         }
-//        return $slug;
-
-//        if(static::whereSlug($slug)->exists()){
-//            $slug = $this->incrementSlug($slug);
-//        }
         $this->attributes['slug'] = $slug;
     }
 
-    /**
-     * @param $slug
-     * @return string
-     */
-    private function incrementSlug($slug)
-    {
-        $original = $slug;
-        $count = 2;
-        while(static::whereSlug($slug)->exists()) {
-            $slug = "{$original}-". $count++;
-        }
-        return $slug;
-//        $maxSlug = static::whereTitle($this->title)->latest('id')->value('slug');
+//    /**
+//     * @param $slug
+//     * @return string
+//     */
+//    private function incrementSlug($slug)
+//    {
+//        $original = $slug;
+//        $count = 2;
+//        while(static::whereSlug($slug)->exists()) {
+//            $slug = "{$original}-". $count++;
+//        }
+//        return $slug;
+////        $maxSlug = static::whereTitle($this->title)->latest('id')->value('slug');
 //        if(is_numeric($maxSlug[-1])){
 //         return preg_replace_callback('/(\d+)$/', function($matches){
 //                return ++$matches[1];
 //            }, $maxSlug);
 //        }
 //        return "{$slug}-2";
-    }
+//    }
 }

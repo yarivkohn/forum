@@ -92,13 +92,31 @@ class CreateThreadsTest extends DataBaseTestCase
     {
         $this->signIn();
 
+
+        $numberOfThreadsToGenerate = rand(4,10);
+        create('App\Thread', [] , $numberOfThreadsToGenerate); // Generate n random threads so that id is not 1
+
         $thread = create('App\Thread', [
             'title' => 'foo title',
-            'slug' => 'foo-title',
         ]);
+
         $this->assertEquals($thread->fresh()->slug, 'foo-title');
         $this->post(route('threads'), $thread->toArray());
-        $this->assertTrue(Thread::where('slug', 'foo-title-2')->exists());
+
+        $nextThreadId = $numberOfThreadsToGenerate + 2; //n random threads + 1 for the first generated thread +1 for the current thread
+        $this->assertTrue(Thread::where('slug', "foo-title-{$nextThreadId}")->exists());
+
+        $numberOfThreadsToGenerateNext = rand(4,10);
+        create('App\Thread', [] , $numberOfThreadsToGenerateNext); // Generate n random threads so that id is not sequential
+
+        $this->post(route('threads'), $thread->toArray());
+        $nextThreadId = $numberOfThreadsToGenerate + $numberOfThreadsToGenerateNext + 3; //n random threads in 2 steps + 3 threads with the same title
+        $this->assertTrue(Thread::where('slug', "foo-title-{$nextThreadId}")->exists());
+
+        // Last test to make sure we are using the id
+        $th = $this->json('post', route('threads'), $thread->toArray())->json();
+        $this->assertEquals("foo-title-{$th['id']}", $th['slug']);
+
     }
 
     /**
@@ -110,12 +128,12 @@ class CreateThreadsTest extends DataBaseTestCase
 
         $thread = create('App\Thread', [
             'title' =>'foo title 24',
-            'slug' => 'foo-title-24',
         ]);
         $this->assertEquals($thread->fresh()->slug, 'foo-title-24');
 
-        $this->post(route('threads'), $thread->toArray());
-        $this->assertTrue(Thread::where('slug', 'foo-title-24-2')->exists());
+        $thread = $this->json('post', route('threads'), $thread->toArray())->json();
+        $this->assertEquals("foo-title-24-{$thread['id']}", $thread['slug']);
+//        $this->assertTrue(Thread::whereSlug('foo-title-24-2')->exists());
     }
 
     /**

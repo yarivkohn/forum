@@ -56,6 +56,12 @@
         .heart-black {
             color: black;
         }
+        .mr-1 {
+            margin-right: 1em;
+        }
+        .ml-a {
+            margin-left: auto;
+        }
     </style>
     @yield('header');
 </head>

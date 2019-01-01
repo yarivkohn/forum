@@ -1,6 +1,6 @@
 <template>
     <div :id="'reply-' + id" class="card">
-        <div class="card-header">
+        <div class="card-header bg-" :class="isBest? ' bg-success' : ''">
             <div class="level">
                 <h5 class="flex">
                     <a :href="'/profile/' + data.owner.name" v-text="data.owner.name"></a>
@@ -24,12 +24,16 @@
             <div v-else class="body" v-html="body"></div>
         </div>
 
-        <div class="card-footer level" v-if="canUpdate">
-            <button class="btn btn-sm btn-info mr-1" @click="editing=true">Edit</button>
-            <button class="btn btn-sm btn-danger" @click="destroy">Delete</button>
+        <div class="card-footer level">
+            <div  v-if="canUpdate">
+                <button class="btn btn-sm btn-info mr-1" @click="editing=true">Edit</button>
+                <button class="btn btn-sm btn-danger mr-1" @click="destroy">Delete</button>
+            </div>
+            <button class="btn btn-sm btn-default ml-a" @click="markBestReply" v-if="! isBest">Best Reply</button>
         </div>
     </div>
 </template>
+
 <script>
     import Favorite from './Favotire';
     import moment from 'moment';
@@ -42,7 +46,8 @@
                 editing: false,
                 id: this.data.id,
                 body: this.data.body,
-                originalBody: this.data.body
+                originalBody: this.data.body,
+                isBest: false
             }
         },
         methods: {
@@ -63,6 +68,9 @@
             destroy() {
                 axios.delete('/replies/' + this.data.id);
                 this.$emit('deleted', this.data.id)
+            },
+            markBestReply() {
+                this.isBest = true;
             }
 
         },

@@ -9,14 +9,25 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-Vue.prototype.authorized = function(handler) {
-    let user = window.App.user;
-    return user ? handler(user) : false;
-    // return handler(window.App.user);
+// Vue.prototype.authorized = function(handler) {
+//     let user = window.App.user;
+//     return user ? handler(user) : false;
+//     // return handler(window.App.user);
+// };
+
+let authorization = require('./authorization');
+
+Vue.prototype.authorized = function(...params) {
+    if(!this.signedIn) { return false;}
+    if(typeof(params[0]) == 'string') {
+        return authorization[params[0]](params[1]);
+    }
+    return params[0](window.App.user)
 };
 
 window.events =  new Vue();
 
+Vue.prototype.signedIn = window.App.signedIn;
 
 /**
  * The following block of code may be used to automatically register your

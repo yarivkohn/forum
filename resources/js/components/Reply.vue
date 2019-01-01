@@ -25,7 +25,7 @@
         </div>
 
         <div class="card-footer level">
-            <div  v-if="canUpdate">
+            <div  v-if="authorized('updateReply', reply)">
                 <button class="btn btn-sm btn-info mr-1" @click="editing=true">Edit</button>
                 <button class="btn btn-sm btn-danger mr-1" @click="destroy">Delete</button>
             </div>
@@ -37,7 +37,6 @@
 <script>
     import Favorite from './Favotire';
     import moment from 'moment';
-
     export default {
         props: ['data'],
         components: {Favorite},
@@ -47,7 +46,8 @@
                 id: this.data.id,
                 body: this.data.body,
                 originalBody: this.data.body,
-                isBest: false
+                isBest: false,
+                reply: this.data
             }
         },
         methods: {
@@ -77,17 +77,17 @@
         computed: {
             ago() {
                 return moment(this.data.created_at).fromNow() + '...';
-            },
-            signedIn() {
-                // var isSignedIn = document.head.querySelector('meta[name="signedIn"]');
-                // console.log(isSignedIn, 'new val');
-
-                return window.App.signedIn;
-            },
-            canUpdate() {
-                return this.authorized(user => this.data.user_id == window.App.user.id);
-                // return this.data.user_id == window.App.user.id;
             }
+            // signedIn() {
+            //     // var isSignedIn = document.head.querySelector('meta[name="signedIn"]');
+            //     // console.log(isSignedIn, 'new val');
+            //
+            //     return window.App.signedIn;
+            // },
+            // canUpdate() {
+            //     return this.authorized(user => this.data.user_id == window.App.user.id);
+            //     // return this.data.user_id == window.App.user.id;
+            // }
         }
     }
 </script>

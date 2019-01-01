@@ -3,11 +3,11 @@
         <div class="card-header bg-" :class="isBest? ' bg-success' : ''">
             <div class="level">
                 <h5 class="flex">
-                    <a :href="'/profile/' + data.owner.name" v-text="data.owner.name"></a>
+                    <a :href="'/profile/' + reply.owner.name" v-text="reply.owner.name"></a>
                     said <span v-text="ago"></span>
                 </h5>
                 <div v-if="signedIn">
-                    <favorite :reply="{ data }"></favorite>
+                    <favorite :reply="{ reply }"></favorite>
                 </div>
             </div>
         </div>
@@ -24,12 +24,12 @@
             <div v-else class="body" v-html="body"></div>
         </div>
 
-        <div class="card-footer level">
-            <div  v-if="authorized('updateReply', reply)">
+        <div class="card-footer level" v-if="(authorized('owns', reply) || authorized('owns', thread))">
+            <div  v-if="authorized('owns', reply)">
                 <button class="btn btn-sm btn-info mr-1" @click="editing=true">Edit</button>
                 <button class="btn btn-sm btn-danger mr-1" @click="destroy">Delete</button>
             </div>
-            <button class="btn btn-sm btn-default ml-a" @click="markBestReply" v-if="! isBest">Best Reply</button>
+            <button class="btn btn-sm btn-default ml-a" @click="markBestReply" v-if="authorized('owns', reply.thread) ">Best Reply</button>
         </div>
     </div>
 </template>
@@ -38,27 +38,26 @@
     import Favorite from './Favotire';
     import moment from 'moment';
     export default {
-        props: ['data'],
+        props: ['reply'],
         components: {Favorite},
         data() {
             return {
                 editing: false,
-                id: this.data.id,
-                body: this.data.body,
-                originalBody: this.data.body,
-                isBest: this.data.isBest,
-                reply: this.data
+                id: this.reply.id,
+                body: this.reply.body,
+                originalBody: this.reply.body,
+                isBest: this.reply.isBest,
             }
         },
         methods: {
             update() {
-                axios.patch('/replies/' + this.data.id, {
+                axios.patch('/replies/' + this.reply.id, {
                     body: this.body
                 }).then(response => {
                     flash('Updated!');
                     this.editing = false;
                 }).catch(error => {
-                    flash(error.response.data, 'danger');
+                    flash(error.response.reply, 'danger');
                 });
             },
             cancel() {
@@ -66,18 +65,18 @@
                 this.body = this.originalBody;
             },
             destroy() {
-                axios.delete('/replies/' + this.data.id);
-                this.$emit('deleted', this.data.id)
+                axios.delete('/replies/' + this.reply.id);
+                this.$emit('deleted', this.reply.id)
             },
             markBestReply() {
                 axios.post('/replies/'+ this.reply.id +'/best', {id: this.reply});
-                window.events.$emit('best-reply-selected', this.data.id);
+                window.events.$emit('best-reply-selected', this.reply.id);
             }
 
         },
         computed: {
             ago() {
-                return moment(this.data.created_at).fromNow() + '...';
+                return moment(this.reply.created_at).fromNow() + '...';
             }
         },
         created() {

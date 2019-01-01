@@ -13,8 +13,8 @@
         props: ['reply'],
         data() {
             return {
-                count : this.reply.data.favoritesCount,
-                active : this.reply.data.isFavorited
+                count : this.reply.favoritesCount,
+                active : this.reply.isFavorited
             }
         },
         methods : {

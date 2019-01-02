@@ -43,8 +43,8 @@
                                 .
                             </p>
                             <p>
-                                <subscribe-button
-                                        :active="{{ json_encode($thread->isSubscribedTo) }}"></subscribe-button>
+                                <subscribe-button :active="{{ json_encode($thread->isSubscribedTo) }}"></subscribe-button>
+                                <button class="btn btn-defualt">Lock</button>
                             </p>
                         </div>
                     </div>

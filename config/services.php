@@ -39,5 +39,7 @@ return [
             'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
         ],
     ],
-
+    'recaptcha' => [
+      'secret' => env('RECAPTCHA_SECRET'),
+    ],
 ];

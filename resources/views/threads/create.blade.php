@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('header')
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+@endsection
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
@@ -11,8 +13,8 @@
                             {{ csrf_field() }}
                             <div class="from-group">
                                 <label for="channel">Choose a channel</label>
-                                <select id="channel"  name="channel_id" class="form-control">
-                                        <option>Choose one</option>
+                                <select id="channel" name="channel_id" class="form-control">
+                                    <option>Choose one</option>
                                     @foreach($channels as $channel)
                                         <option value="{{ $channel->id }}" {{ old('channel_id') == $channel->id ? 'selected' : '' }}> {{ $channel->name }}</option>
                                     @endforeach
@@ -28,6 +30,10 @@
                                 <textarea id="body" name="body" class="form-control"
                                           rows="8">{{ old('body') }}</textarea>
                             </div>
+                            <div class="form-group">
+                                <div class="g-recaptcha" data-sitekey="6LdGS4YUAAAAAFhbkPVMeIXznr2ELEz4_xql6PJg"></div>
+                            </div>
+
                             <button type="submit" class="btn btn-primary">Publish</button>
                         </form>
                         @if(count($errors))

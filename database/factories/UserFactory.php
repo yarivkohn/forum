@@ -31,6 +31,12 @@ $factory->state(App\User::class, 'unconfirmed', function() {
     ];
 });
 
+$factory->state(App\User::class, 'administrator', function() {
+    return [
+        'name' => 'Yariv'
+    ];
+});
+
 $factory->define(App\Thread::class, function(Faker $faker){
     $title = $faker->sentence;
     return [

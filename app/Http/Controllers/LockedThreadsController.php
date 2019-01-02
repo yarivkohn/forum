@@ -13,7 +13,18 @@ class LockedThreadsController extends Controller
 //        if (!auth()->user()->isAdmin()) {
 //            return response('You don\'t have permissions to lock this thread', Response::HTTP_FORBIDDEN);
 //        }
-        $thread->lock();
+        $thread->update([
+            'locked' => true,
+        ]);
+
+        return response('', Response::HTTP_CREATED);
+    }
+
+    public function destroy(Thread $thread)
+    {
+        $thread->update([
+            'locked' => false,
+        ]);
         return response('', Response::HTTP_CREATED);
     }
 }

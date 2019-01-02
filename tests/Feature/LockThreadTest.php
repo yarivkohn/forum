@@ -44,12 +44,23 @@ class LockThreadTest extends DataBaseTestCase
     /**
      * @test
      */
+    public function an_administrator_can_unlock_any_thread()
+    {
+        $this->signIn();
+        $thread = create('App\Thread', ['user_id' => auth()->id()]);
+        $this->signIn(factory('App\User')->state('administrator')->create());
+        $this->delete(route('locked-threads.destroy', $thread))
+            ->assertStatus(Response::HTTP_CREATED);
+        $this->assertFalse(!!$thread->fresh()->locked);
+    }
+
+    /**
+     * @test
+     */
     public function once_locked_a_thread_may_not_receive_new_replies()
     {
         $this->signIn();
-        $thread = create('App\Thread');
-        $thread->lock();
-
+        $thread = create('App\Thread', ['locked' => true]);
         $this->post($thread->path() . '/replies', [
             'body' => 'This reply will not be saved',
             'user_id' => auth()->id(),

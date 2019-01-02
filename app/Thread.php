@@ -16,6 +16,13 @@ class Thread extends Model
 
     protected $appends = ['isSubscribedTo'];
 
+//   Here we can cast all of our  returned eloquent data for custom format
+//   Usually helps to avoid different results from different MySql versions
+//
+//    protected $casts = [
+//        'locked' => 'boolean'
+//    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -127,13 +134,21 @@ class Thread extends Model
     {
         return $this->hasMany(ThreadSubscriptions::class);
     }
-
-    public function lock()
-    {
-        $this->update([
-            'locked' => true,
-        ]);
-    }
+// We abandoned this approach since there is an internal lock function on laravel query builder and we
+// don't want to take a chance of overriding it
+//    public function lock()
+//    {
+//        $this->update([
+//            'locked' => true,
+//        ]);
+//    }
+//
+//    public function unlock()
+//    {
+//        $this->update([
+//            'locked' => false,
+//        ]);
+//    }
 
     /**
      * Custom Eloquent attribute
@@ -220,5 +235,4 @@ class Thread extends Model
     {
         $this->update(['best_reply_id' => $reply->id]);
     }
-
 }

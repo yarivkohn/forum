@@ -24,6 +24,7 @@ Route::get('/threads/{channel}', 'ThreadsController@index');
 Route::get('/threads/{channel}/{thread}', 'ThreadsController@show');
 Route::patch('/threads/{channel}/{thread}', 'ThreadsController@update');
 Route::post('locked-thread/{thread}', 'LockedThreadsController@store')->name('locked-threads.store')->middleware('admin');
+Route::delete('locked-thread/{thread}', 'LockedThreadsController@destroy')->name('locked-threads.destroy')->middleware('admin');
 Route::get('/threads/{channel}/{thread}/replies', 'RepliesController@index');
 Route::post('/threads/{channel}/{thread}/subscription', 'ThreadsSubscriptionsController@store')->middleware('auth');
 Route::delete('/threads/{channel}/{thread}/subscription', 'ThreadsSubscriptionsController@destroy')->middleware('auth');

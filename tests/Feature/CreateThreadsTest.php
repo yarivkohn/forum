@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Activity;
+use App\Rules\Recaptcha;
 use App\Thread;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\DataBaseTestCase;
@@ -12,6 +13,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class CreateThreadsTest extends DataBaseTestCase
 {
 
+    public function setUp()
+    {
+        parent::setUp();
+        app()->singleton(Recaptcha::class, function(){
+            $mock = \Mockery::mock(Recaptcha::class);
+            $mock->shouldReceive('passes')->andReturn(true);
+            return $mock;
+        });
+    }
 
     /**
      * @test
@@ -50,7 +60,7 @@ class CreateThreadsTest extends DataBaseTestCase
         $this->signIn();
         $thread = make('App\Thread');
 
-        $response = $this->post(route('threads'), $thread->toArray());
+        $response = $this->post(route('threads'), array_merge($thread->toArray(), ['g-recaptcha-response' => 'token']));
 
         $this->get($response->headers->get('Location'))
             ->assertSee($thread->title)
@@ -101,7 +111,7 @@ class CreateThreadsTest extends DataBaseTestCase
         ]);
 
         $this->assertEquals($thread->fresh()->slug, 'foo-title');
-        $this->post(route('threads'), $thread->toArray());
+        $this->post(route('threads'), $thread->toArray() + ['g-recaptcha-response' => 'token']);
 
         $nextThreadId = $numberOfThreadsToGenerate + 2; //n random threads + 1 for the first generated thread +1 for the current thread
         $this->assertTrue(Thread::where('slug', "foo-title-{$nextThreadId}")->exists());
@@ -109,14 +119,24 @@ class CreateThreadsTest extends DataBaseTestCase
         $numberOfThreadsToGenerateNext = rand(4,10);
         create('App\Thread', [] , $numberOfThreadsToGenerateNext); // Generate n random threads so that id is not sequential
 
-        $this->post(route('threads'), $thread->toArray());
+        $this->post(route('threads'), $thread->toArray() + ['g-recaptcha-response' => 'token']);
         $nextThreadId = $numberOfThreadsToGenerate + $numberOfThreadsToGenerateNext + 3; //n random threads in 2 steps + 3 threads with the same title
         $this->assertTrue(Thread::where('slug', "foo-title-{$nextThreadId}")->exists());
 
         // Last test to make sure we are using the id
-        $th = $this->json('post', route('threads'), $thread->toArray())->json();
+        $th = $this->json('post', route('threads'), $thread->toArray() + ['g-recaptcha-response' => 'token'])->json();
         $this->assertEquals("foo-title-{$th['id']}", $th['slug']);
 
+    }
+
+    /**
+     * @test
+     */
+    public function a_thread_requires_a_captcha_verification()
+    {
+        unset(app()[Recaptcha::class]); // Clean the mockery class from the container for this test
+        $this->publishThread(['g-recaptcha-response' => 'test'])
+            ->assertSessionHasErrors('g-recaptcha-response');
     }
 
     /**
@@ -131,7 +151,7 @@ class CreateThreadsTest extends DataBaseTestCase
         ]);
         $this->assertEquals($thread->fresh()->slug, 'foo-title-24');
 
-        $thread = $this->json('post', route('threads'), $thread->toArray())->json();
+        $thread = $this->json('post', route('threads'), $thread->toArray() + ['g-recaptcha-response' => 'token'])->json();
         $this->assertEquals("foo-title-24-{$thread['id']}", $thread['slug']);
 //        $this->assertTrue(Thread::whereSlug('foo-title-24-2')->exists());
     }

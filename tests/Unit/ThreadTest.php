@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Notifications\ThreadWasUpdated;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Notification;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class ThreadTest extends TestCase
@@ -121,6 +122,53 @@ class ThreadTest extends TestCase
             0,
             $thread->subscriptions()->where(['user_id'=> auth()->id()])->count()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function a_thread_require_a_title_and_a_body_to_be_update()
+    {
+        $this->withExceptionHandling();
+        $this->signIn();
+        $thread = create('App\Thread', ['user_id' => auth()->id()]);
+        $this->patch($thread->path(), [
+            'title' => 'Updated title',
+        ])->assertSessionHasErrors('body');
+
+        $this->patch($thread->path(), [
+            'body' => 'Updated body',
+        ])->assertSessionHasErrors('title');
+
+    }
+
+    /**
+     * @test
+     */
+    public function unauthorized_users_may_not_update_a_thread()
+    {
+        $this->withExceptionHandling();
+        $this->signIn();
+        $thread = create('App\Thread', ['user_id' => create('App\User')]);
+        $this->patch($thread->path(), [
+            'title' => 'Updated title',
+            'body' => 'Updated body',
+        ])->assertStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     * @test
+     */
+    public function a_thread_can_be_updated_by_its_creator()
+    {
+        $this->signIn();
+        $thread = create('App\Thread', ['user_id' => auth()->id()]);
+        $this->patch($thread->path(), [
+            'title' => 'Updated title',
+            'body' => 'Updated body',
+        ]);
+        $this->assertEquals('Updated title', $thread->fresh()->title);
+        $this->assertEquals('Updated body', $thread->fresh()->body);
     }
 
     /**

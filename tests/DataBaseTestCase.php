@@ -3,12 +3,14 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
 abstract class DataBaseTestCase extends TestCase
 {
     use CreatesApplication;
-    use DatabaseMigrations;
+//    use DatabaseMigrations;
+    use RefreshDatabase; // This trait is an improvement of DatabaseMigrations
 
     protected function setUp()
     {

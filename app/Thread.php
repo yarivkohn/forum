@@ -4,11 +4,13 @@ namespace App;
 
 use App\Providers\ThreadReceivedNewReply;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Builder;
+use Laravel\Scout\Searchable;
 
 
 class Thread extends Model
 {
-    use RecordActivity;
+    use RecordActivity, Searchable;
 
     protected $guarded = [];
 
@@ -51,6 +53,12 @@ class Thread extends Model
 //            $builder->with('creator');
 //        });
     }
+
+    public static function search($query = '', $callback = null)
+    {
+        return new Builder(new static, $query, $callback);
+    }
+
 
     public function __construct(array $attributes = [])
     {

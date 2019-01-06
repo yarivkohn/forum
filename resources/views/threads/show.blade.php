@@ -9,27 +9,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-8 offset-1">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="level">
-                                <img src="{{ asset($thread->creator->avatar()) }}" width="25" height="25" class="mr-2"
-                                     alt="{{ $thread->creator->name }}">
-                                <span class="flex">
-                            <a href="/profile/{{ $thread->creator->name }}">{{ $thread->creator->name }}</a> posted: {{ $thread->title }}
-                        </span>
-                                @can ('update', $thread)
-                                    <form method="POST" action=" {{ $thread->path() }}">
-                                        {{ csrf_field() }}
-                                        {{ method_field('DELETE') }}
-                                        <button type="submit" class="btn btn-link">Delete Thread</button>
-                                    </form>
-                                @endcan
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="body">{{ $thread->body }}</div>
-                        </div>
-                    </div>
+                    @include('threads._question')
                     <replies @removed="--repliesCount" @added="++repliesCount"></replies>
                 </div>
                 <div class="col-md-3">

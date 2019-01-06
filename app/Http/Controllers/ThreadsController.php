@@ -51,14 +51,12 @@ class ThreadsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
      * @param Recaptcha $recaptcha
      * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request, Recaptcha $recaptcha)
+    public function store(Recaptcha $recaptcha)
     {
-        $this->validate($request, [
+        request()->validate([
             'title' => 'required | spamfree',
             'body' => 'required | spamfree',
             'channel_id' => 'required|exists:channels,id',
@@ -67,9 +65,9 @@ class ThreadsController extends Controller
 
         $thread = Thread::create([
             'user_id' => auth()->id(),
-            'channel_id' => $request->get('channel_id'),
+            'channel_id' => request('channel_id'),
             'title' => request('title'),
-            'body' => $request->get('body'),
+            'body' => request('body'),
         ]);
 
         if(request()->wantsJson()){
@@ -104,7 +102,7 @@ class ThreadsController extends Controller
     public function update($channel, Thread $thread)
     {
         $this->authorize('update', $thread);
-        $this->validate(request(), [
+        request()->validate([
             'title' => 'required | spamfree',
             'body' => 'required | spamfree',
         ]);

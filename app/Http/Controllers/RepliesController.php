@@ -70,7 +70,7 @@ class RepliesController extends Controller
     public function update(Reply $reply)
     {
             $this->authorize('update', $reply);
-            $this->validate(request(), [
+            request()->validate([
                 'body' => 'required|spamfree'
             ]);
             $reply->update([

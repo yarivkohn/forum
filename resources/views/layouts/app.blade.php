@@ -62,8 +62,8 @@
         .ml-a {
             margin-left: auto;
         }
-        #app > main > div.container > div > div > h2 > span > em {
-            background: yellow;
+        #app > main > div.container > div > div > p:nth-child(1) > a > span > em {
+            font-weight: bold;
         }
     </style>
     @yield('header');

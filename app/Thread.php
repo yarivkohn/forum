@@ -185,6 +185,11 @@ class Thread extends Model
 //    {
 ////        return new Visits($this);
 //    }
+    public function toSearchableArray()
+    {
+        return $this->toArray() + ['path' => $this->path()];
+    }
+
 
     /**
      * @param $reply

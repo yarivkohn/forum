@@ -7,7 +7,11 @@
 
 require('./bootstrap');
 
+import Instantsearch from 'vue-instantsearch';
+
 window.Vue = require('vue');
+
+Vue.use(Instantsearch);
 
 // Vue.prototype.authorized = function(handler) {
 //     let user = window.App.user;

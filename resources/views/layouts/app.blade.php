@@ -62,11 +62,12 @@
         .ml-a {
             margin-left: auto;
         }
-        #app > main > div.container > div > div > p:nth-child(1) > a > span > em {
-            font-weight: bold;
+        .ais-highlight > em {
+            background:yellow;
+            font-style: normal;
         }
     </style>
-    @yield('header');
+    @yield('header')
 </head>
 <body>
 <div id="app">

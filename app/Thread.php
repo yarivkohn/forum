@@ -6,6 +6,7 @@ use App\Providers\ThreadReceivedNewReply;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Searchable;
+use Purify;
 
 
 class Thread extends Model
@@ -211,6 +212,11 @@ class Thread extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    public function getBodyAttribute($body)
+    {
+        return Purify::clean($body);
     }
 
     public function setSlugAttribute($value)

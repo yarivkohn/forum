@@ -55,10 +55,10 @@ class ThreadTest extends TestCase
     public function a_thread_can_add_a_reply()
     {
         $this->thread->addReply([
-            'body' =>'FooBar',
+            'body' => 'FooBar',
             'user_id' => 1
         ]);
-        $this->assertCount(1, $this->thread->replies );
+        $this->assertCount(1, $this->thread->replies);
     }
 
     /**
@@ -66,13 +66,13 @@ class ThreadTest extends TestCase
      */
     public function a_thread_notify_all_registered_subscribers_when_a_reply_is_added()
     {
-        Notification::fake( );
+        Notification::fake();
         $this->signIn();
         $this->thread->subscribe()
-        ->addReply([
-            'body' =>'FooBar',
-            'user_id' => 1
-        ]);
+            ->addReply([
+                'body' => 'FooBar',
+                'user_id' => 1
+            ]);
         Notification::assertSentTo(auth()->user(), ThreadWasUpdated::class);
 
     }
@@ -100,7 +100,7 @@ class ThreadTest extends TestCase
 
         $this->assertEquals(
             1,
-            $thread->subscriptions()->where(['user_id'=> auth()->id()])->count()
+            $thread->subscriptions()->where(['user_id' => auth()->id()])->count()
         );
     }
 
@@ -120,7 +120,7 @@ class ThreadTest extends TestCase
         //Then we shouldn't be fetch subscription for that thread and user
         $this->assertEquals(
             0,
-            $thread->subscriptions()->where(['user_id'=> auth()->id()])->count()
+            $thread->subscriptions()->where(['user_id' => auth()->id()])->count()
         );
     }
 
@@ -147,7 +147,7 @@ class ThreadTest extends TestCase
     {
         $this->signIn();
         $thread = create('App\Thread');
-        tap(auth()->user(), function($user) use($thread){
+        tap(auth()->user(), function ($user) use ($thread) {
             $this->assertTrue($thread->hasUpdatesFor($user));
             $user->read($thread);
             $this->assertFalse($thread->hasUpdatesFor($user));
@@ -168,5 +168,17 @@ class ThreadTest extends TestCase
 //        $thread->visits()->record();
 //        $this->assertEquals(2, $thread->visits()->count());
 //    }
+
+    /**
+     * @test
+     */
+    public function a_thread_sanitize_automatically()
+    {
+        $thread = make('App\Thread', [
+            'body' => '<p>Something malicious like <scrip>alert("bad")</script></scrip></p>'
+        ]);
+
+        $this->assertEquals('<p>Something malicious like alert("bad")</p>', $thread->body);
+    }
 
 }

@@ -87,6 +87,7 @@ class ThreadsController extends Controller
      */
     public function show($channelId, Thread $thread, Trending $trending)
     {
+        return $thread;
         //Record that the subscriber has visited this link
         if(auth()->check()){
             auth()->user()->read($thread);

@@ -4,6 +4,7 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Prurify;
 
 class Reply extends Model
 {
@@ -81,5 +82,10 @@ class Reply extends Model
     public function getIsBestAttribute()
     {
         return $this->isBest();
+    }
+
+    public function getBodyAttribute($body)
+    {
+        return Prurify::claen($body);
     }
 }

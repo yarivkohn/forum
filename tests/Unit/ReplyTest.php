@@ -42,4 +42,16 @@ class ReplyTest extends TestCase
         $reply->thread->update(['best_reply_id' => $reply->id]);
         $this->assertTrue($reply->fresh()->isBest());
     }
+
+    /**
+     * @test
+     */
+    public function a_reply_sanitize_automatically()
+    {
+        $thread = make('App\Reply', [
+            'body' => '<p>Something malicious like <scrip>alert("bad")</script></scrip></p>'
+        ]);
+
+        $this->assertEquals('<p>Something malicious like alert("bad")</p>', $thread->body);
+    }
 }

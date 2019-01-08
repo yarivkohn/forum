@@ -4,7 +4,8 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Prurify;
+use Purify;
+
 
 class Reply extends Model
 {
@@ -86,6 +87,6 @@ class Reply extends Model
 
     public function getBodyAttribute($body)
     {
-        return Prurify::claen($body);
+        return Purify::clean($body);
     }
 }

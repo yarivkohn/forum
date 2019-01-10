@@ -11,8 +11,31 @@
 |
 */
 
+use App\Events\TaskCreated;
+use App\Task;
+
+class Order {
+    public $id;
+
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
+}
+
+
 Route::get('/', function () {
     return view('welcome');
+});
+
+
+Route::get('/tasks', function(){
+    return Task::latest()->pluck('body');
+});
+
+Route::post('/tasks', function(){
+    $task = Task::forceCreate(['body' => request('body')]);
+    event(new TaskCreated($task));
 });
 
 Auth::routes();

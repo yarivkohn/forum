@@ -7,6 +7,8 @@
 @section('content')
     <thread-view inline-template :thread="{{ $thread }}">
         <div class="container-fluid">
+            <tasks-list></tasks-list>
+
             <div class="row">
                 <div class="col-md-8 offset-1">
                     @include('threads._question')

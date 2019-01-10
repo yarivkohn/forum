@@ -47,12 +47,26 @@ Vue.component('thread-view', require('./pages/Thread.vue'));
 Vue.component('user-notifications', require('./components/userNotifications.vue'));
 Vue.component('avatar-form', require('./components/AvatarForm.vue'));
 Vue.component('wysiwyg', require('./components/Wysiwyg.vue'));
+
+
+
+Vue.component('tasks-list', require('./components/TasksList.vue'));
 // Vue.component('favorite', require('./components/Favotire.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key)))
 
 Vue.config.ignoredElements = ['trix-editor']
+import Echo from 'laravel-echo'
+
+window.Pusher = require('pusher-js');
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: process.env.MIX_PUSHER_APP_KEY,
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+    encrypted: true
+});
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -24,6 +24,7 @@ class TaskCreated implements ShouldBroadcast
     {
         //
         $this->task = $task;
+        $this->dontBroadcastToCurrentUser();
     }
 
     /**
@@ -33,6 +34,6 @@ class TaskCreated implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('tasks');
+        return new PresenceChannel('tasks.'.$this->task->project_id);
     }
 }

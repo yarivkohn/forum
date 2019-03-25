@@ -12,16 +12,17 @@
 */
 
 use App\Events\TaskCreated;
+use App\Project;
 use App\Task;
 
-class Order {
-    public $id;
-
-    public function __construct($id)
-    {
-        $this->id = $id;
-    }
-}
+//class Order {
+//    public $id;
+//
+//    public function __construct($id)
+//    {
+//        $this->id = $id;
+//    }
+//}
 
 
 Route::get('/', function () {
@@ -35,8 +36,25 @@ Route::get('/tasks', function(){
 
 Route::post('/tasks', function(){
     $task = Task::forceCreate(['body' => request('body')]);
+    event(
+        (new TaskCreated($task))
+    );
+});
+
+Route::get('/projects/{project}', function(Project $project){
+    $project->load('tasks');
+    return view('projects.show')->with('project', $project);
+});
+
+Route::post('/api/projects/{project}', function(Project $project){
+    $task = $project->tasks()->create(['body'=> request('body')]);
     event(new TaskCreated($task));
 });
+
+Route::get('/api/projects/{project}', function(Project $project){
+    return $project->tasks->pluck('body');
+});
+
 
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
